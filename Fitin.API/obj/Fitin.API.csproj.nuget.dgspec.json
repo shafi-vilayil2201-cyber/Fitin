@@ -1,0 +1,317 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/shafivilayil/Desktop/Fitin/Fitin.API/Fitin.API.csproj": {}
+  },
+  "projects": {
+    "/Users/shafivilayil/Desktop/Fitin/Fitin.API/Fitin.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/shafivilayil/Desktop/Fitin/Fitin.API/Fitin.API.csproj",
+        "projectName": "Fitin.API",
+        "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.API/Fitin.API.csproj",
+        "packagesPath": "/Users/shafivilayil/.nuget/packages/",
+        "outputPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.API/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/shafivilayil/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj": {
+                "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj"
+              },
+              "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/Fitin.Infrastructure.csproj": {
+                "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/Fitin.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.28.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.7, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.7, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.1.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj",
+        "projectName": "Fitin.Application",
+        "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj",
+        "packagesPath": "/Users/shafivilayil/.nuget/packages/",
+        "outputPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/shafivilayil/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj": {
+                "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj",
+        "projectName": "Fitin.Domain",
+        "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj",
+        "packagesPath": "/Users/shafivilayil/.nuget/packages/",
+        "outputPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/shafivilayil/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/Fitin.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/Fitin.Infrastructure.csproj",
+        "projectName": "Fitin.Infrastructure",
+        "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/Fitin.Infrastructure.csproj",
+        "packagesPath": "/Users/shafivilayil/.nuget/packages/",
+        "outputPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/shafivilayil/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj": {
+                "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Application/Fitin.Application.csproj"
+              },
+              "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj": {
+                "projectPath": "/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/Fitin.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.28.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.16.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

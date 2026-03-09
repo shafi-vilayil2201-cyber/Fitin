@@ -1,0 +1,11 @@
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/bin/Debug/net8.0/Fitin.Domain.deps.json
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/bin/Debug/net8.0/Fitin.Domain.dll
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/bin/Debug/net8.0/Fitin.Domain.pdb
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.AssemblyInfoInputs.cache
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.AssemblyInfo.cs
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.csproj.CoreCompileInputs.cache
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.dll
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/refint/Fitin.Domain.dll
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/Fitin.Domain.pdb
+/Users/shafivilayil/Desktop/Fitin/Fitin.Domain/obj/Debug/net8.0/ref/Fitin.Domain.dll
