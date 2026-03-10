@@ -10,6 +10,7 @@ namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/cart")]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartRepository _cartRepository;
@@ -18,24 +19,46 @@ public class CartController : ControllerBase
     {
         _cartRepository = cartRepository;
     }
+    private Guid GetUserId ()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddToCart(AddToCartDto dto)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = GetUserId();
 
-        var CartItem = new CartItem(
-            Guid.Parse(userId!),
-            dto.ProductId,
-            dto.Quantity,
-            DateTime.UtcNow
-        );
-
-        await _cartRepository.AddAsync(CartItem);
+        await _cartRepository.AddToCartAsync(userId,dto.ProductId);
 
         return Ok("Product added to cart");
     }
+    [HttpPatch("increase")]
+    public async Task<IActionResult> IncreaseQuantity(AddToCartDto dto)
+    {
+        var userId = GetUserId();
 
+        await _cartRepository.IncreaseQuantityAsync(userId,dto.ProductId);
+
+        return Ok("Quantity increased");
+    }
+    [HttpPatch("decrease")]
+    public async Task<IActionResult> DecreaseQuantity(AddToCartDto dto)
+    {
+        var userId = GetUserId();
+
+        await _cartRepository.DecreaseQuantityAsync(userId,dto.ProductId);
+
+        return Ok("Quantity decreased");
+    }
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> RemoveProduct(Guid productId)
+    {
+        var userId = GetUserId();
+
+        await _cartRepository.RemoveFromCartAsync(userId,productId);
+
+        return Ok("Product removed from cart");
+    }
 
 }

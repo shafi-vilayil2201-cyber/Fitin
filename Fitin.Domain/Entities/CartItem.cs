@@ -6,13 +6,13 @@ namespace Fitin.Domain.Entities.CartItems;
 
 public class CartItem
 {
-    public Guid Id{get; private set;}
-    public Guid UserId{get; private set;}
-    public Guid ProductId{get;private set;}
-    public int Quantity {get; private set; }
-    public DateTime CreatedAt{get;private set;}
+    public Guid Id{get;  set;}
+    public Guid UserId{get;  set;}
+    public Guid ProductId{get; set;}
+    public int Quantity {get; set; }
+    public DateTime CreatedAt{get; set;}
 
-    private CartItem() {}
+    // private CartItem() {}
 
     public CartItem(Guid userId,Guid productId,int quantity,DateTime createdAt)
     {
