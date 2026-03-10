@@ -2,7 +2,7 @@
 
 
 
-namespace Fitin.Domain.Entities.CartItem;
+namespace Fitin.Domain.Entities.CartItems;
 
 public class CartItem
 {
@@ -17,6 +17,7 @@ public class CartItem
     public CartItem(Guid userId,Guid productId,int quantity,DateTime createdAt)
     {
         Id= Guid.NewGuid();
+        UserId = userId;
         ProductId = productId;
         Quantity = quantity;
         CreatedAt = createdAt;
