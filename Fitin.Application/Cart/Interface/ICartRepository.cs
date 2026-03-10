@@ -1,4 +1,4 @@
-using Fitin.Domain.Entities.CartItem;
+using Fitin.Domain.Entities.CartItems;
 
 namespace Fitin.Application.Cart.Interfaces;
 

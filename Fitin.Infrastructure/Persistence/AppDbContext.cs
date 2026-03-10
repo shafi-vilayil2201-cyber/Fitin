@@ -1,7 +1,8 @@
 using Fitin.Domain.Entities;
 using Fitin.Domain.Entities.Product;
 using Microsoft.EntityFrameworkCore;
-using Fitin.Domain.Entities.CartItem;
+using Fitin.Domain.Entities.CartItems;
+using Fitin.Domain.Entities.Wishlists;
 
 namespace Fitin.Infrastructure.Persistence
 {
@@ -11,6 +12,7 @@ namespace Fitin.Infrastructure.Persistence
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Product> Products => Set<Product>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
+        public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -74,28 +76,6 @@ namespace Fitin.Infrastructure.Persistence
                 builder.HasIndex(x => new {x.UserId, x.ProductId})
                     .IsUnique();
             });
-
-
-            // modelBuilder.Entity<CartItem>(builder =>
-            // {
-            //     builder.HasKey(x => x.Id);
-
-            //     builder.Property(x => x.Quantity)
-            //         .IsRequired();
-
-            //     builder.HasOne<User>()
-            //         .WithMany("CartItems")
-            //         .HasForeignKey(x => x.UserId)
-            //         .OnDelete(DeleteBehavior.Cascade);
-
-            //     builder.HasOne<Product>()
-            //         .WithMany()
-            //         .HasForeignKey(x => x.ProductId)
-            //         .OnDelete(DeleteBehavior.Cascade);
-
-            //     builder.HasIndex(x => new { x.UserId, x.ProductId })
-            //         .IsUnique();
-            // });
         }
     }
 }

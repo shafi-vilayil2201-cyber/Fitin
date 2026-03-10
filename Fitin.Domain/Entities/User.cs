@@ -1,4 +1,5 @@
 using Fitin.Domain.Enums;
+using Fitin.Domain.Entities.CartItems;
 
 namespace Fitin.Domain.Entities
 {
@@ -14,6 +15,7 @@ namespace Fitin.Domain.Entities
 
         private readonly List<RefreshToken> _refreshTokens = new();
         public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+        public ICollection<CartItem> CartItems {get; set;} = new List<CartItem>();
 
         private User(){}
 

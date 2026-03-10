@@ -1,5 +1,5 @@
 using Fitin.Application.Authentication;
-using Fitin.Application.Authentication.Interfaces;
+
 using Fitin.Infrastructure.Auth;
 using Fitin.Infrastructure.Persistence;
 using Fitin.Infrastructure.Repositories;
@@ -7,9 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Fitin.Application.Products.Interfaces;
 using Fitin.Infrastructure.Services;
 using Fitin.Infrastructure.Settings;
+using Fitin.Application.Cart.Interfaces;
+using Fitin.Application.Products.Interfaces;
+using Fitin.Application.Authentication.Interfaces;
+using Fitin.Application.Wishlist.Interfaces;
 
 
 
@@ -35,6 +38,9 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
+
     
 // JWT Authentication
 builder.Services

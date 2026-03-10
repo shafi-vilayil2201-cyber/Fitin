@@ -1,6 +1,6 @@
 using Fitin.Application.Cart.Interfaces;
 using Fitin.Infrastructure.Persistence;
-using Fitin.Domain.Entities.CartItem;
+using Fitin.Domain.Entities.CartItems;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,6 +18,7 @@ public class CartRepository : ICartRepository
     public async Task AddAsync (CartItem item)
     {
         await _context.CartItems.AddAsync(item);
+    
         await _context.SaveChangesAsync();
     }
 }

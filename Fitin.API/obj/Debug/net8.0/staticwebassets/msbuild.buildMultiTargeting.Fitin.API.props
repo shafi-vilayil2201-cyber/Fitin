@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/Fitin.API.props" />
-</Project>
