@@ -20,9 +20,9 @@ namespace Fitin.Infrastructure.Persistence
         {
             modelBuilder.Entity<User>(builder =>
             {
-                builder.HasKey(x => x.Id);
+                builder.HasKey(x => x.Id); //define primary key
 
-                builder.HasIndex(x => x.Email)
+                builder.HasIndex(x => x.Email) //
                     .IsUnique();
 
                 builder.Property(x => x.Role)
@@ -74,6 +74,24 @@ namespace Fitin.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Cascade);
 
                 builder.HasIndex(x => new {x.UserId, x.ProductId})
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<WishlistItem>(builder =>
+            {
+                builder.HasKey(x => x.Id); 
+
+                builder.HasOne<User>()
+                    .WithMany("WishlistItems")
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                builder.HasOne<Product>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                builder.HasIndex(x => new {x.UserId,x.ProductId} )
                     .IsUnique();
             });
         }
