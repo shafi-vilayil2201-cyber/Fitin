@@ -73,24 +73,24 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct(ProductDto dto)
-    {
-        var product = new Product(dto.Name, dto.Price, dto.Category, dto.Stock ,dto.ImageUrl);
+//     [Authorize(Roles = "Admin")]
+//     [HttpPost]
+//     public async Task<IActionResult> CreateProduct(ProductDto dto)
+//     {
+//         var product = new Product(dto.Name, dto.Price, dto.Category, dto.Stock ,dto.ImageUrl);
 
-        await _productrespository.AddAsync(product);
+//         await _productrespository.AddAsync(product);
 
-        var result = new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Category = product.Category,
-            Stock = product.Stock,
-            ImageUrl = product.ImageUrl
-        };
+//         var result = new ProductDto
+//         {
+//             Id = product.Id,
+//             Name = product.Name,
+//             Price = product.Price,
+//             Category = product.Category,
+//             Stock = product.Stock,
+//             ImageUrl = product.ImageUrl
+//         };
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = product.Id }, result);
-    }
+//         return CreatedAtAction(nameof(GetByIdAsync), new { id = product.Id }, result);
+//     }
 }

@@ -1,5 +1,3 @@
-
-
 using System.Security.Claims;
 using Fitin.Application.Wishlist.Dto;
 using Fitin.Application.Wishlist.Interfaces;
@@ -16,7 +14,7 @@ public class WishlistController : ControllerBase
     private readonly IWishlistRepository _repository;
 
 
-    public WishlistController (IWishlistRepository repository)
+    public WishlistController(IWishlistRepository repository)
     {
         _repository = repository;
     }
