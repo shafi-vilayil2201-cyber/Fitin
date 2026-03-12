@@ -1,15 +1,12 @@
+using Fitin.Application.Common.Interfaces;
+using Fitin.Application.Products.Dto;
 using Fitin.Domain.Entities.Product;
 
 
 namespace Fitin.Application.Products.Interfaces;
 
-public interface IProductRepository
+public interface IProductRepository : IGenericRepository<Product>
 {
-    Task<IEnumerable<Product>> GetAllAsync();
     Task<IEnumerable<Product>> GetByCategoryAsync(string category);
-    Task<Product?> GetByIdAsync(Guid id);
-    Task AddAsync (Product product);
-    Task UpdateAsync (Product product);
-    Task DeleteAsync (Product product);
-
+    Task<IEnumerable<Product>> GetProductsAsync(ProductQueryDto query);
 }

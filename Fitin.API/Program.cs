@@ -13,6 +13,8 @@ using Fitin.Application.Cart.Interfaces;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.Wishlist.Interfaces;
+using Fitin.Application.Common.Mappings;
+using Fitin.Application.Products.Services;
 
 
 
@@ -40,8 +42,9 @@ builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
-
-    
+builder.Services.AddAutoMapper(typeof(ProductProfile));
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 // JWT Authentication
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,7 +82,7 @@ builder.Services
 
 var app = builder.Build();
 
-// Swagger
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -89,7 +92,7 @@ if (app.Environment.IsDevelopment())
 // Middleware
 app.UseHttpsRedirection();
 
-app.UseAuthentication();   // IMPORTANT
+app.UseAuthentication();  
 app.UseAuthorization();
 
 app.MapControllers();
