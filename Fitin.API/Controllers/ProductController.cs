@@ -1,96 +1,49 @@
-using Fitin.Application.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Fitin.Application.Products.Interfaces;
-using Fitin.Domain.Entities.Product;
-using Microsoft.AspNetCore.Authorization;
+using Fitin.Application.Products.Dto;
 
 namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/products")]
-public class ProductController : ControllerBase
+public class ProductsController : ControllerBase
 {
-    private readonly IProductRepository _productrespository;
+    private readonly IProductService _service;
 
-    public ProductController(IProductRepository  productrespository)
+    public ProductsController(IProductService service)
     {
-        _productrespository = productrespository;
+        _service = service;
     }
-
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProduct()
+    public async Task<IActionResult> GetAll()
     {
-        var products =await _productrespository.GetAllAsync();
-
-        var result = products.Select(p => new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Category = p.Category,
-            Stock = p.Stock
-        });
-        return Ok(result);
+        var products = await _service.GetAllAsync();
+        return Ok(products);
     }
-
-  
-    [HttpGet("category/{category}")]
-    public async Task<IActionResult> GetCategory(string category)
-    {
-        var products = await _productrespository.GetByCategoryAsync(category);
-
-        var result = products.Select(p => new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Category= p.Category,
-            Stock = p.Stock
-        });
-
-        return Ok(result);
-    }
-
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var product = await _productrespository.GetByIdAsync(id);
-        
-        if(product == null)
-            return NotFound();
-        
-        var result = new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Category = product.Category,
-            Stock = product.Stock
-        };
+        var product = await _service.GetByIdAsync(id);
 
-        return Ok(result);
+        if (product == null)
+            return NotFound();
+
+        return Ok(product);
     }
 
-//     [Authorize(Roles = "Admin")]
-//     [HttpPost]
-//     public async Task<IActionResult> CreateProduct(ProductDto dto)
-//     {
-//         var product = new Product(dto.Name, dto.Price, dto.Category, dto.Stock ,dto.ImageUrl);
+    [HttpGet("category/{category}")]
+    public async Task<IActionResult> GetByCategory(string category)
+    {
+        var products = await _service.GetByCategoryAsync(category);
+        return Ok(products);
+    }
+    [HttpGet("Search")]
+    public async Task<IActionResult> GetProduct([FromQuery]ProductQueryDto query)
+    {
+        var products =await _service.GetProductsAsync(query);
+        return Ok(products);
+    }
 
-//         await _productrespository.AddAsync(product);
-
-//         var result = new ProductDto
-//         {
-//             Id = product.Id,
-//             Name = product.Name,
-//             Price = product.Price,
-//             Category = product.Category,
-//             Stock = product.Stock,
-//             ImageUrl = product.ImageUrl
-//         };
-
-//         return CreatedAtAction(nameof(GetByIdAsync), new { id = product.Id }, result);
-//     }
 }

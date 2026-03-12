@@ -19,7 +19,6 @@ public static class DbSeeder
             passwordHash,
             UserRole.Admin
         );
-
         await context.Users.AddAsync(admin);
         await context.SaveChangesAsync();
     }
