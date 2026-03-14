@@ -1,5 +1,5 @@
 using Fitin.Domain.Entities;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Fitin.Domain.Entities.CartItems;
 using Fitin.Domain.Entities.Wishlists;
@@ -68,7 +68,7 @@ namespace Fitin.Infrastructure.Persistence
                     .HasForeignKey(x=>x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                builder.HasOne<Product>()
+                builder.HasOne(x => x.Product)
                     .WithMany()
                     .HasForeignKey(x => x.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);

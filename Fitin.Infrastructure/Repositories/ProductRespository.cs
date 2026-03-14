@@ -1,15 +1,15 @@
 using Fitin.Application.Products.Interfaces;
 using Fitin.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 using Fitin.Application.Products.Dto;
 
 
 namespace Fitin.Infrastructure.Repositories;
 
-public class ProductRepository :GenericRepository<Product> ,IProductRepository
+public class ProductRepository : GenericRepository<Product>, IProductRepository
 {
-    public ProductRepository(AppDbContext context) : base (context)
+    public ProductRepository(AppDbContext context) : base(context)
     {
     }
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
@@ -22,19 +22,19 @@ public class ProductRepository :GenericRepository<Product> ,IProductRepository
     {
         var products = _context.Products.AsQueryable();
 
-        if(!string.IsNullOrEmpty(query.Category))
+        if (!string.IsNullOrEmpty(query.Category))
         {
             products = products.Where(p => p.Category == query.Category);
         }
-        if(!string.IsNullOrEmpty(query.Sort))
+        if (!string.IsNullOrEmpty(query.Sort))
         {
             switch (query.Sort.ToLower())
             {
                 case "price_asc":
                     products = products.OrderBy(p => p.Price);
                     break;
-                case "price_desc" :
-                    products = products.OrderByDescending(p=> p.Price);
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.Price);
                     break;
             }
         }

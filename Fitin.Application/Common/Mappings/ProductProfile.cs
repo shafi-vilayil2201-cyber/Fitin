@@ -2,7 +2,7 @@
 
 using AutoMapper;
 using Fitin.Application.Products.Dto;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 
 namespace Fitin.Application.Common.Mappings;
 
@@ -12,6 +12,5 @@ public class ProductProfile : Profile
     {
         CreateMap<Product, ProductDto>();
         CreateMap<CreateProductDto ,Product>();
-
     }
 }

@@ -1,5 +1,5 @@
 
-namespace Fitin.Domain.Entities.Product;
+namespace Fitin.Domain.Entities.Products;
 
 public class Product
 {
@@ -8,6 +8,7 @@ public class Product
     public decimal Price { get; private set; }
     public string Category { get; private set; }
     public int Stock { get; private set; }
+    public bool IsOutOfStock => Stock <= 0;
     public string ImageUrl { get; private set; } = string.Empty;
 
     private Product() { }
