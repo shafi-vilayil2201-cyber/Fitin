@@ -1,9 +1,10 @@
 
+using Fitin.Domain.Common;
+
 namespace Fitin.Domain.Entities.Products;
 
-public class Product
+public class Product : BaseEntity
 {
-    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public string Category { get; private set; }
@@ -15,7 +16,7 @@ public class Product
 
     public Product(string name, decimal price, string category, int stock, string imageUrl = "")
     {
-        Id = Guid.NewGuid();
+
         Name = name;
         Price = price;
         Category = category;

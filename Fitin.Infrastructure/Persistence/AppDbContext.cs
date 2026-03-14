@@ -3,6 +3,8 @@ using Fitin.Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Fitin.Domain.Entities.CartItems;
 using Fitin.Domain.Entities.Wishlists;
+// using Fitin.Domain.Common;
+// using System.Linq.Expressions;
 
 namespace Fitin.Infrastructure.Persistence
 {
@@ -15,6 +17,7 @@ namespace Fitin.Infrastructure.Persistence
         public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -94,6 +97,33 @@ namespace Fitin.Infrastructure.Persistence
                 builder.HasIndex(x => new {x.UserId,x.ProductId} )
                     .IsUnique();
             });
+            modelBuilder.Entity<Product>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<CartItem>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<WishlistItem>()
+                .HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(x => !x.IsDeleted);
+            // ApplySoftDeleteQueryFilters(modelBuilder);
         }
+
+        // private static void ApplySoftDeleteQueryFilters(ModelBuilder modelBuilder)
+        // {
+        //     foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        //     {
+        //         if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+        //             continue;
+
+        //         var parameter = Expression.Parameter(entityType.ClrType, "e");
+        //         var isDeletedProperty = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+        //         var filter = Expression.Lambda(Expression.Equal(isDeletedProperty, Expression.Constant(false)), parameter);
+
+        //         entityType.SetQueryFilter(filter);
+        //     }
+        // }
     }
 }
