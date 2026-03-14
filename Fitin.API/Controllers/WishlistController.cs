@@ -12,8 +12,6 @@ namespace Fitin.API.Controllers;
 public class WishlistController : ControllerBase
 {
     private readonly IWishlistRepository _repository;
-
-
     public WishlistController(IWishlistRepository repository)
     {
         _repository = repository;
@@ -34,6 +32,4 @@ public class WishlistController : ControllerBase
 
         return Ok("product is added to wishlist");
     }
-
-
 }

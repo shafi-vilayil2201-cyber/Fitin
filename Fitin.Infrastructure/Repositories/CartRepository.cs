@@ -4,74 +4,42 @@ using Fitin.Domain.Entities.CartItems;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace Fitin.Infrastructure.Repositories;
 
 public class CartRepository : ICartRepository
 {
     private readonly AppDbContext _context;
 
-    public CartRepository(AppDbContext context)
+    public CartRepository (AppDbContext context)
     {
         _context = context;
     }
 
-    public async Task AddToCartAsync(Guid userId, Guid productId)
+    public async Task<CartItem?> GetCartItemAsync(Guid userId ,Guid productId)
     {
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
-
-        if (cartItem != null)
-        {
-            cartItem.Quantity++;
-        }
-        else
-        {
-            var newItem = new CartItem(userId, productId, 1,DateTime.UtcNow);
-            await _context.CartItems.AddAsync(newItem);
-        }
-        await _context.SaveChangesAsync();
+        return await _context.CartItems
+            .FirstOrDefaultAsync(x => x.ProductId == productId && x.UserId == userId);
     }
-    public async Task IncreaseQuantityAsync(Guid userId,Guid productId)
+    public async Task<IEnumerable<CartItem>> GetUserCartAsync(Guid userId)
     {
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
-        
-        if (cartItem == null)
-            throw new Exception("Cart item not Found");
+        return await _context.CartItems
+            .Where(x => x.UserId == userId)
+            .Include(x => x.Product)
+            .ToListAsync();
+    }
 
-        cartItem.Quantity++;
-
-        await _context.SaveChangesAsync();
-
+    public async Task AddAsync (CartItem item)
+    {
+         await _context.CartItems.AddAsync(item);
 
     }
-    public async Task DecreaseQuantityAsync(Guid userId,Guid productId)
+    public async Task RemoveAsync(CartItem item)
     {
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
-        
-        if (cartItem == null)
-            throw new Exception("Cart item not Found");
-        
-        cartItem.Quantity--;
-
-        if(cartItem.Quantity <= 0)
-        {
-            _context.CartItems.Remove(cartItem);
-        }
-
-        await _context.SaveChangesAsync();
+        _context.CartItems.Remove(item);
     }
-    public async Task RemoveFromCartAsync(Guid userid, Guid productId)
+    public async Task SaveChangesAsync()
     {
-        var cartItem = await _context.CartItems
-            .FirstOrDefaultAsync(x => x.UserId == userid && x.ProductId == productId);
-
-        if(cartItem == null)
-            throw new Exception("product not found");
-
-        _context.CartItems.Remove(cartItem);
-
         await _context.SaveChangesAsync();
     }
 }

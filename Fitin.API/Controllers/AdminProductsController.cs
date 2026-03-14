@@ -2,7 +2,7 @@ using Fitin.Application.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Fitin.Application.Products.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 
 namespace Fitin.API.Controllers;
 

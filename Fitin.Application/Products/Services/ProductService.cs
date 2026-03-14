@@ -1,5 +1,5 @@
 using AutoMapper;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Products.Dto;
 

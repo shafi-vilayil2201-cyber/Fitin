@@ -1,6 +1,6 @@
 using Fitin.Application.Common.Interfaces;
 using Fitin.Application.Products.Dto;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
 
 
 namespace Fitin.Application.Products.Interfaces;

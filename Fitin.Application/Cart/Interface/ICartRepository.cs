@@ -2,10 +2,16 @@ using Fitin.Domain.Entities.CartItems;
 
 namespace Fitin.Application.Cart.Interfaces;
 
+
 public interface ICartRepository
 {
-    Task AddToCartAsync(Guid userId,Guid ProductId);
-    Task IncreaseQuantityAsync(Guid userId,Guid ProductId);
-    Task DecreaseQuantityAsync(Guid userId,Guid ProductId);
-    Task RemoveFromCartAsync (Guid userId,Guid ProductId);
+    Task<CartItem?> GetCartItemAsync(Guid userId, Guid productId);
+
+    Task<IEnumerable<CartItem>> GetUserCartAsync(Guid userId);
+
+    Task AddAsync(CartItem item);
+
+    Task RemoveAsync(CartItem item);
+
+    Task SaveChangesAsync();
 }
