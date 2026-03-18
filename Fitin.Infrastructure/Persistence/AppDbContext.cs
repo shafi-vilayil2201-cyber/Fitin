@@ -58,6 +58,9 @@ namespace Fitin.Infrastructure.Persistence
                 builder.Property(x => x.ImageUrl)
                     .IsRequired()
                     .HasDefaultValue(string.Empty);
+                builder.Property(x => x.Price)
+                    .HasPrecision(18, 2);
+
             });
             modelBuilder.Entity<CartItem>(builder =>
             {
@@ -87,15 +90,16 @@ namespace Fitin.Infrastructure.Persistence
                 builder.HasOne<User>()
                     .WithMany("WishlistItems")
                     .HasForeignKey(x => x.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
                 
-                builder.HasOne<Product>()
+                builder.HasOne(x=> x.Product)
                     .WithMany()
                     .HasForeignKey(x => x.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
                 
                 builder.HasIndex(x => new {x.UserId,x.ProductId} )
                     .IsUnique();
+                
             });
             modelBuilder.Entity<Product>()
             .HasQueryFilter(x => !x.IsDeleted);

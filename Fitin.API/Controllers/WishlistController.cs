@@ -9,27 +9,41 @@ namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/wishlist")]
+[Authorize]
 public class WishlistController : ControllerBase
 {
-    private readonly IWishlistRepository _repository;
-    public WishlistController(IWishlistRepository repository)
+    private readonly IWishlistService _wishlistService;
+    public WishlistController(IWishlistService wishlistService)
     {
-        _repository = repository;
+        _wishlistService = wishlistService;
+    }
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> AddToWishlist(AddToWishlistDto dto)
+    
+    [HttpPost("{productId}")]
+    public async Task<IActionResult> AddToWishlist(Guid productId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var item = new WishlistItem(
-           Guid.Parse(userId!),
-           dto.ProductId
-        );
-
-        await _repository.AddAsync(item);
+        await _wishlistService.AddToWishListAsync(GetUserId(),productId);
 
         return Ok("product is added to wishlist");
     }
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> RemoveFromWishist(Guid productId)
+    {
+        await _wishlistService.RemoveFromWishlistAsync(GetUserId(),productId);
+
+        return Ok("Product removed from Wishlist");
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetUserWishlist()
+    {
+        var wishlist = await _wishlistService.GetUserWishListAsync(GetUserId());
+
+        return Ok(wishlist);
+    }
+    
 }

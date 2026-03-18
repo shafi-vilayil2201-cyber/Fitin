@@ -16,6 +16,7 @@ using Fitin.Application.Wishlist.Interfaces;
 using Fitin.Application.Common.Mappings;
 using Fitin.Application.Products.Services;
 using Fitin.Application.Cart.Services;
+using Fitin.Application.Wishlist.Services;
 
 
 
@@ -44,9 +45,10 @@ builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
-builder.Services.AddAutoMapper(typeof(ProductProfile));
+builder.Services.AddAutoMapper(typeof(ProductProfile), typeof(WishlistProfile));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
 
 // JWT Authentication
 builder.Services
