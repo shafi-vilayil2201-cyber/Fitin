@@ -11,7 +11,7 @@ namespace Fitin.API.Controllers;
 [ApiController]
 [Route("api/cart")]
 [Authorize]
-public class CartController : ControllerBase
+public class CartController : BaseApiController
 {
     private readonly ICartService _cartService;
 
@@ -19,7 +19,7 @@ public class CartController : ControllerBase
     {
         _cartService = cartService;
     }
-    private Guid GetUserId ()
+    private Guid GetUserId()
     {
         return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
@@ -27,40 +27,40 @@ public class CartController : ControllerBase
     [HttpPost("{productId}")]
     public async Task<IActionResult> AddToCart(Guid productId)
     {
-        await _cartService.AddToCartAsync(GetUserId(),productId);
+        await _cartService.AddToCartAsync(GetUserId(), productId);
 
-        return Ok("Product added to cart");
+        return Success<object?>(null, "Product added to cart");
     }
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveProduct(Guid productId)
     {
-        await _cartService.RemoveFromCartAsync(GetUserId(),productId);
+        await _cartService.RemoveFromCartAsync(GetUserId(), productId);
 
-        return Ok("Product removed from cart");
+        return Success<object?>(null, "Product removed from cart");
     }
     [HttpGet]
     public async Task<IActionResult> GetUserCart()
     {
         var cart = await _cartService.GetUserCartAsync(GetUserId());
 
-        return Ok(cart);
+        return Success<object>(cart, "Cart fetched successfully");
     }
 
     [HttpPatch("increase/{productId}")]
     public async Task<IActionResult> IncreaseQuantity(Guid productId)
     {
 
-        await _cartService.IncreaseQuantityAsync(GetUserId(),productId);
+        await _cartService.IncreaseQuantityAsync(GetUserId(), productId);
 
-        return Ok("Quantity increased");
+        return Success<object?>(null, "Quantity increased");
     }
     [HttpPatch("decrease/{productId}")]
     public async Task<IActionResult> DecreaseQuantity(Guid productId)
     {
 
-        await _cartService.DecreaseQuantityAsync(GetUserId(),productId);
+        await _cartService.DecreaseQuantityAsync(GetUserId(), productId);
 
-        return Ok("Quantity decreased");
+        return Success<object?>(null, "Quantity decreased");
     }
-    
+
 }

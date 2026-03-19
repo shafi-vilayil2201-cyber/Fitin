@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Products.Dto;
-
 namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/products")]
-public class ProductsController : ControllerBase
+public class ProductsController : BaseApiController
 {
     private readonly IProductService _service;
 
@@ -19,7 +18,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var products = await _service.GetAllAsync();
-        return Ok(products);
+        return Success(products,"Products retrieved successfully");
     }
 
     [HttpGet("{id}")]
@@ -28,22 +27,22 @@ public class ProductsController : ControllerBase
         var product = await _service.GetByIdAsync(id);
 
         if (product == null)
-            return NotFound();
+            return Failure("Product not found",null,404);
 
-        return Ok(product);
+        return Success(product,"Product retrieved successfully");
     }
 
     [HttpGet("category/{category}")]
     public async Task<IActionResult> GetByCategory(string category)
     {
         var products = await _service.GetByCategoryAsync(category);
-        return Ok(products);
+        return Success(products,"Products retrieved by category");
     }
-    [HttpGet("Search")]
+    [HttpGet("search")]
     public async Task<IActionResult> GetProduct([FromQuery]ProductQueryDto query)
     {
         var products =await _service.GetProductsAsync(query);
-        return Ok(products);
+        return Success(products,"Products retrieved by Search");
     }
 
 }
