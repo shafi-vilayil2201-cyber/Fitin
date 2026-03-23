@@ -2,15 +2,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Fitin.Application.DTOs;
 
-public record RegisterRequestDto(
+public class RegisterRequestDto
+{
     [Required]
-    [StringLength(100, MinimumLength = 2)]
-    string Name,
+    [MinLength(2)]
+    [MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
     [Required]
     [EmailAddress]
-    [StringLength(256)]
-    string Email,
+    [MaxLength(256)]
+    public string Email { get; set; } = string.Empty;
+
     [Required]
-    [StringLength(128, MinimumLength = 8)]
-    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", ErrorMessage = "Password must include uppercase, lowercase, and a number.")]
-    string Password);
+    [MinLength(8)]
+    [MaxLength(100)]
+    [RegularExpression(
+        @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$",
+        ErrorMessage = "Password must contain uppercase, lowercase, number, and special character.")]
+    public string Password { get; set; } = string.Empty;
+}

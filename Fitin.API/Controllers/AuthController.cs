@@ -2,14 +2,13 @@ using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Fitin.API.Responses;
 
 
 namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly AuthService _authService;
 
@@ -39,7 +38,7 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(1)
         });
 
-        return Ok(ApiResponseFactory.Success(result,"Register successful"));
+        return Success(result, "Register successful");
     }
 
     [HttpPost("login")]
@@ -63,13 +62,13 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(1)
         });
 
-        return Ok(ApiResponseFactory.Success (result ,"Login successful"));
+        return Success(result, "Login successful");
     }
 
     [Authorize]
     [HttpGet("profile")]
     public IActionResult Profile()
     {
-        return Ok("You are authenticated");
+        return Success("You are authenticated", "Profile fetched successfully");
     }
 }
