@@ -9,7 +9,7 @@ namespace Fitin.API.Controllers;
 [ApiController]
 [Route("api/admin/products")]
 [Authorize(Roles = "Admin")]
-public class AdminProductsController : ControllerBase
+public class AdminProductsController : BaseApiController
 {
     private readonly IProductRepository _productRepository;
     private readonly IImageService _imageService;
@@ -26,14 +26,14 @@ public class AdminProductsController : ControllerBase
         var product = new Product(dto.Name, dto.Price, dto.Category, dto.Stock, dto.ImageUrl);
         await _productRepository.AddAsync(product);
 
-        return Ok(new ProductDto
+        return CreatedResponse(new ProductDto
         {
             Id = product.Id,
             Name = product.Name,
             Price = product.Price,
             Category = product.Category,
             Stock = product.Stock
-        });
+        }, "Product created successfully");
     } 
     
     [HttpPost("upload")]
@@ -43,6 +43,6 @@ public class AdminProductsController : ControllerBase
 
         var url = await _imageService.UploadImageAsync(stream, file.FileName);
 
-        return Ok(url);
+        return Success(url, "Image uploaded successfully");
     }
 }
