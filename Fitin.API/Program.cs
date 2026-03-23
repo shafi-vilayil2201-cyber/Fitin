@@ -20,6 +20,7 @@ using Fitin.Application.Wishlist.Services;
 using Fitin.API.Middleware;
 using Fitin.Application.Orders.Interface;
 using Fitin.Application.Orders.Service;
+using Fitin.Application.Common.Interfaces;
 
 
 
@@ -58,6 +59,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // JWT Authentication
 builder.Services

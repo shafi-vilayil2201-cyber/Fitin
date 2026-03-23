@@ -3,6 +3,7 @@
 using AutoMapper;
 using Fitin.Application.Cart.Interfaces;
 using Fitin.Application.Common.Exceptions;
+using Fitin.Application.Common.Interfaces;
 using Fitin.Application.Orders.DTOs;
 using Fitin.Application.Orders.Interface;
 using Fitin.Application.Products.Interfaces;
@@ -18,17 +19,20 @@ public class OrderService : IOrderService
     private readonly ICartRepository _cartRepository;
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
     public OrderService (
         IOrderRepository orderRepository,
         ICartRepository cartRepository,
         IProductRepository productRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository;
         _cartRepository = cartRepository;
         _productRepository = productRepository;
         _mapper= mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<CreateOrderResponseDto> CreateOrderAsync(Guid userId)
@@ -73,7 +77,7 @@ public class OrderService : IOrderService
             await _cartRepository.RemoveAsync(item.CartItem);
         }
         await _orderRepository.AddAsync(order);
-        await _orderRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
 
         return new CreateOrderResponseDto
         {
