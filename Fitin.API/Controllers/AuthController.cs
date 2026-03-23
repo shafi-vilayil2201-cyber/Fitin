@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Fitin.API.Responses;
 
+
 namespace Fitin.API.Controllers;
 
 [ApiController]
@@ -38,7 +39,7 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(1)
         });
 
-        return Ok(ApiResponseFactory.Success<object>("Register successful",null));
+        return Ok(ApiResponseFactory.Success(result,"Register successful"));
     }
 
     [HttpPost("login")]
@@ -62,7 +63,7 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(1)
         });
 
-        return Ok(ApiResponseFactory.Success<object>("Login successful"));
+        return Ok(ApiResponseFactory.Success (result ,"Login successful"));
     }
 
     [Authorize]

@@ -45,9 +45,12 @@ public class AuthService
         var accessToken = _tokenGenerator.GenerateAccessToken(user);
         var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
+        var AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15);
+        var RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(1);
+
         var refreshEntity = new RefreshToken(
             refreshToken,
-            DateTime.UtcNow.AddDays(1),
+            RefreshTokenExpiresAt,
             user.Id);
 
         user.AddRefreshToken(refreshEntity);
@@ -55,9 +58,11 @@ public class AuthService
 
         await _userRepository.SaveChangesAsync();
 
-        return new AuthResponseDto(accessToken, refreshToken);
-
-        
+        return new AuthResponseDto(
+            accessToken, 
+            refreshToken,
+            AccessTokenExpiresAt,
+            RefreshTokenExpiresAt);
 
     }
 }
