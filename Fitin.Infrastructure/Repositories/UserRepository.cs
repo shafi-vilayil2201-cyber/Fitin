@@ -37,5 +37,18 @@ namespace Fitin.Infrastructure.Repositories;
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            return await _context.Users
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+        }
+        public async Task<User?> GetUserWithOrdersAsync(Guid userId)
+        {
+            return await _context.Users
+                .Include(x => x.Orders)
+                    .ThenInclude(o => o.OrderItems)
+                .FirstOrDefaultAsync(x=> x.Id == userId);
+        }
 
     }
