@@ -18,6 +18,8 @@ using Fitin.Application.Products.Services;
 using Fitin.Application.Cart.Services;
 using Fitin.Application.Wishlist.Services;
 using Fitin.API.Middleware;
+using Fitin.Application.Orders.Interface;
+using Fitin.Application.Orders.Service;
 
 
 
@@ -49,10 +51,13 @@ builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
 builder.Services.AddAutoMapper(
     typeof(ProductProfile),
     typeof(WishlistProfile),
-    typeof(CartProfile));
+    typeof(CartProfile),
+    typeof(OrderProfile));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // JWT Authentication
 builder.Services

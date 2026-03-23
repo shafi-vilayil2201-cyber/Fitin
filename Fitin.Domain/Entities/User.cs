@@ -18,6 +18,7 @@ namespace Fitin.Domain.Entities
         public ICollection<CartItem> CartItems {get; set;} = new List<CartItem>();
 
         public ICollection<WishlistItem> WishlistItems { get; set; } = new List<WishlistItem>();
+        public ICollection<Order> Orders {get;private set;} = new List<Order>();
         private User(){}
 
         public User (string name, string email, string passwordHash ,UserRole role = UserRole.User)
