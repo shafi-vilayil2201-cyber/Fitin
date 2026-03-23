@@ -34,6 +34,30 @@ namespace Fitin.Domain.Entities
         {
             _refreshTokens.Add(token);
         }
-
+        public void Block()
+        {
+            if(!IsActive)
+                throw new InvalidOperationException("User already Blocked");
+            
+            IsActive = false;
+            MarkUpdated();
+        }
+        public void Unblock()
+        {
+            if(IsActive)
+                throw new InvalidOperationException("User already active");
+            
+            IsActive = true;
+            MarkUpdated();
+        }
+        public void UpdateRole(UserRole role)
+        {
+            if(Role == role)
+                throw new InvalidOperationException("User already has this role");
+            
+            Role = role;
+            MarkUpdated();
+        }
+        
     }
 }

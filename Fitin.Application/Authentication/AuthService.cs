@@ -1,3 +1,4 @@
+using Fitin.Application.Common.Exceptions;
 using Fitin.Application.DTOs;
 using Fitin.Domain.Entities;
 
@@ -37,6 +38,9 @@ public class AuthService
 
         if (user == null || !_passwordHasher.Verify(dto.Password, user.PasswordHash))
             throw new Exception("Invalid credential");
+        
+        if(!user.IsActive)
+            throw new BadRequestException("Your Account is blocked.");
 
         return await GenerateTokensAsync(user);
     }
