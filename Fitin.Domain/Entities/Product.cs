@@ -16,12 +16,21 @@ public class Product : BaseEntity
 
     public Product(string name, decimal price, string category, int stock, string imageUrl = "")
     {
-
         Name = name;
         Price = price;
         Category = category;
         Stock = stock;
         ImageUrl = imageUrl;
+    }
+
+    public void UpdateDetails(string name, decimal price, string category, int stock, string imageUrl = "")
+    {
+        Name = name;
+        Price = price;
+        Category = category;
+        Stock = stock;
+        ImageUrl = imageUrl;
+        MarkUpdated();
     }
 
     public void ReduceStock(int quantity)

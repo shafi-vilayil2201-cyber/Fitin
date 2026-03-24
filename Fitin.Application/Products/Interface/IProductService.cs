@@ -12,7 +12,7 @@ public interface IProductService
 
     Task<ProductDto> CreateAsync(CreateProductDto dto);
 
-    Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto dto);
+    Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto);
 
     Task DeleteAsync(Guid id);
     Task<IEnumerable<ProductDto>> GetProductsAsync(ProductQueryDto query);
