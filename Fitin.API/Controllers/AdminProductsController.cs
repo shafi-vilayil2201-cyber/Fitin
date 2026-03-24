@@ -1,8 +1,7 @@
-using Fitin.Application.Products.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Fitin.Application.Products.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Fitin.Domain.Entities.Products;
+using Fitin.Application.Products.Dto;
 
 namespace Fitin.API.Controllers;
 
@@ -11,34 +10,69 @@ namespace Fitin.API.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminProductsController : BaseApiController
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductService _productService;
     private readonly IImageService _imageService;
 
-    public AdminProductsController(IProductRepository productRepository, IImageService imageService)
+    public AdminProductsController(IProductService productService, IImageService imageService)
     {
-        _productRepository = productRepository;
+        _productService = productService;
         _imageService = imageService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var products = await _productService.GetAllAsync();
+        return Success(products, "Products retrieved successfully");
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var product = await _productService.GetByIdAsync(id);
+
+        if (product == null)
+            return Failure("Product not found", null, 404);
+
+        return Success(product, "Product retrieved successfully");
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
     {
-        var product = new Product(dto.Name, dto.Price, dto.Category, dto.Stock, dto.ImageUrl);
-        await _productRepository.AddAsync(product);
+        var product = await _productService.CreateAsync(dto);
+        return CreatedResponse(product, "Product created successfully");
+    }
 
-        return CreatedResponse(new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Category = product.Category,
-            Stock = product.Stock
-        }, "Product created successfully");
-    } 
-    
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductDto dto)
+    {
+        var product = await _productService.UpdateAsync(id, dto);
+
+        if (product == null)
+            return Failure("Product not found", null, 404);
+
+        return Success(product, "Product updated successfully");
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var product = await _productService.GetByIdAsync(id);
+
+        if (product == null)
+            return Failure("Product not found", null, 404);
+
+        await _productService.DeleteAsync(id);
+        return Success<object?>(null, "Product deleted successfully");
+    }
+
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(IFormFile file)
     {
+        if (file == null || file.Length == 0)
+            return Failure("Image file is required");
+
         using var stream = file.OpenReadStream();
 
         var url = await _imageService.UploadImageAsync(stream, file.FileName);

@@ -58,7 +58,12 @@ public class ProductService : IProductService
         if (product == null)
             return null;
 
-        _mapper.Map(dto, product);
+        product.UpdateDetails(
+            dto.Name,
+            dto.Price,
+            dto.Category,
+            dto.Stock,
+            dto.ImageUrl);
 
         await _repository.UpdateAsync(product);
 
