@@ -24,7 +24,7 @@ public class CartService : ICartService
         _productRepository = productRepository;
     }
 
-    public async Task AddToCartAsync(Guid userId, Guid productId)
+    public async Task<IEnumerable<CartItemDto>> AddToCartAsync(Guid userId, Guid productId)
     {
         var product = await _productRepository.GetByIdAsync(productId);
 
@@ -53,6 +53,8 @@ public class CartService : ICartService
         }
 
         await _cartRepository.SaveChangesAsync();
+        var cartItems = await _cartRepository.GetUserCartAsync(userId);
+        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
     }
 
     public async Task RemoveFromCartAsync(Guid userId, Guid productId)
@@ -74,7 +76,7 @@ public class CartService : ICartService
         return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
     }
 
-    public async Task IncreaseQuantityAsync(Guid userId, Guid productId)
+    public async Task<IEnumerable<CartItemDto>> IncreaseQuantityAsync(Guid userId, Guid productId)
     {
         var cartItem = await _cartRepository.GetCartItemAsync(userId, productId);
 
@@ -95,14 +97,17 @@ public class CartService : ICartService
         cartItem.IncreaseQuantity();
 
         await _cartRepository.SaveChangesAsync();
+
+        var cartItems = await _cartRepository.GetUserCartAsync(userId);
+        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
     }
 
-    public async Task DecreaseQuantityAsync(Guid userId, Guid productId)
+    public async Task<IEnumerable<CartItemDto>> DecreaseQuantityAsync(Guid userId, Guid productId)
     {
         var cartItem = await _cartRepository.GetCartItemAsync(userId, productId);
 
         if (cartItem == null)
-            return;
+            throw new Exception("Cart item not found");
 
         cartItem.DecreaseQuantity();
 
@@ -112,5 +117,8 @@ public class CartService : ICartService
         }
 
         await _cartRepository.SaveChangesAsync();
+
+        var cartItems = await _cartRepository.GetUserCartAsync(userId);
+        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
     }
 }

@@ -27,9 +27,9 @@ public class CartController : BaseApiController
     [HttpPost("{productId}")]
     public async Task<IActionResult> AddToCart(Guid productId)
     {
-        await _cartService.AddToCartAsync(GetUserId(), productId);
+        var cart = await _cartService.AddToCartAsync(GetUserId(), productId);
 
-        return Success<object?>(null, "Product added to cart");
+        return Success(cart, "Product added to cart");
     }
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveProduct(Guid productId)
@@ -50,9 +50,9 @@ public class CartController : BaseApiController
     public async Task<IActionResult> IncreaseQuantity(Guid productId)
     {
 
-        await _cartService.IncreaseQuantityAsync(GetUserId(), productId);
+        var cart = await _cartService.IncreaseQuantityAsync(GetUserId(), productId);
 
-        return Success<object?>(null, "Quantity increased");
+        return Success(cart, "Quantity increased");
     }
     [HttpPatch("decrease/{productId}")]
     public async Task<IActionResult> DecreaseQuantity(Guid productId)
