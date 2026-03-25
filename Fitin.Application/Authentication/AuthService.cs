@@ -1,3 +1,4 @@
+using Fitin.Application.Common.Exceptions;
 using Fitin.Application.DTOs;
 using Fitin.Domain.Entities;
 
@@ -17,26 +18,58 @@ public class AuthService
         _tokenGenerator = tokenGenerator;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
+    public async Task RegisterAsync(RegisterRequestDto dto)
     {
-        var existing = await _userRepository.GetByEmailAsync(dto.Email);
+        var name = dto.Name.Trim();
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var password = dto.Password;
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new BadRequestException("Name is required.");
+
+        if (string.IsNullOrWhiteSpace(email))
+            throw new BadRequestException("Email is required.");
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new BadRequestException("Password is required.");
+
+        if (!IsValidPassword(password))
+        {
+            throw new BadRequestException(
+                "Password must be at least 8 characters and contain uppercase, lowercase, number, and special character.");
+        }
+
+        var existing = await _userRepository.GetByEmailAsync(email);
 
         if (existing != null)
-            throw new Exception("User Already exists");
+            throw new BadRequestException("User already exists.");
 
-        var hash = _passwordHasher.Hash(dto.Password);
-        var user = new User(dto.Name, dto.Email, hash);
+        var hash = _passwordHasher.Hash(password);
+        var user = new User(name, email, hash);
 
         await _userRepository.AddAsync(user);
+        await _userRepository.SaveChangesAsync();
 
-        return await GenerateTokensAsync(user);
+        // return await GenerateTokensAsync(user);
     }
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto dto)
     {
-        var user = await _userRepository.GetByEmailAsync(dto.Email);
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var password = dto.Password;
 
-        if (user == null || !_passwordHasher.Verify(dto.Password, user.PasswordHash))
-            throw new Exception("Invalid credential");
+        if (string.IsNullOrWhiteSpace(email))
+            throw new BadRequestException("Email is required.");
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new BadRequestException("Password is required.");
+
+        var user = await _userRepository.GetByEmailAsync(email);
+
+        if (user == null || !_passwordHasher.Verify(password, user.PasswordHash))
+            throw new BadRequestException("Invalid credentials.");
+        
+        if(!user.IsActive)
+            throw new BadRequestException("Your account is blocked.");
 
         return await GenerateTokensAsync(user);
     }
@@ -45,9 +78,12 @@ public class AuthService
         var accessToken = _tokenGenerator.GenerateAccessToken(user);
         var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
+        var AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15);
+        var RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(1);
+
         var refreshEntity = new RefreshToken(
             refreshToken,
-            DateTime.UtcNow.AddDays(1),
+            RefreshTokenExpiresAt,
             user.Id);
 
         user.AddRefreshToken(refreshEntity);
@@ -55,9 +91,20 @@ public class AuthService
 
         await _userRepository.SaveChangesAsync();
 
-        return new AuthResponseDto(accessToken, refreshToken);
+        return new AuthResponseDto(
+            accessToken, 
+            refreshToken,
+            AccessTokenExpiresAt,
+            RefreshTokenExpiresAt);
 
-        
+    }
 
+    private static bool IsValidPassword(string password)
+    {
+        return password.Length >= 8
+            && password.Any(char.IsUpper)
+            && password.Any(char.IsLower)
+            && password.Any(char.IsDigit)
+            && password.Any(ch => !char.IsLetterOrDigit(ch));
     }
 }

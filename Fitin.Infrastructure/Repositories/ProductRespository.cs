@@ -1,50 +1,43 @@
 using Fitin.Application.Products.Interfaces;
 using Fitin.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Fitin.Domain.Entities.Product;
+using Fitin.Domain.Entities.Products;
+using Fitin.Application.Products.Dto;
 
 
 namespace Fitin.Infrastructure.Repositories;
 
-public class ProductRepository : IProductRepository
+public class ProductRepository : GenericRepository<Product>, IProductRepository
 {
-    private readonly AppDbContext _context;
-
-    public ProductRepository(AppDbContext context)
+    public ProductRepository(AppDbContext context) : base(context)
     {
-        _context = context;
-    }
-    public async Task<IEnumerable<Product>> GetAllAsync()
-    {
-        return await _context.Products.ToListAsync();
     }
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
     {
-        return await _context.Products
-                .Where(p => p.Category == category)
-                .ToListAsync();
+        return await _dbSet
+            .Where(x => x.Category == category)
+            .ToListAsync();
     }
-    public async Task<Product?> GetByIdAsync(Guid id)
+    public async Task<IEnumerable<Product>> GetProductsAsync(ProductQueryDto query)
     {
-        return await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == id);
-    }
-    public async Task AddAsync(Product product)
-    {
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-    }
+        var products = _context.Products.AsQueryable();
 
-    public async Task UpdateAsync(Product product)
-    {
-        _context.Products.Update(product);
-        await _context.SaveChangesAsync();
+        if (!string.IsNullOrEmpty(query.Category))
+        {
+            products = products.Where(p => p.Category == query.Category);
+        }
+        if (!string.IsNullOrEmpty(query.Sort))
+        {
+            switch (query.Sort.ToLower())
+            {
+                case "price_asc":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+            }
+        }
+        return await products.ToListAsync();
     }
-
-    public async Task DeleteAsync(Product product)
-    {
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
-    }
-
 }

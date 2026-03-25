@@ -1,9 +1,6 @@
-
-
 using System.Security.Claims;
 using Fitin.Application.Wishlist.Dto;
 using Fitin.Application.Wishlist.Interfaces;
-using Fitin.Domain.Entities.Wishlists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,31 +8,41 @@ namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/wishlist")]
-public class WishlistController : ControllerBase
+[Authorize]
+public class WishlistController : BaseApiController
 {
-    private readonly IWishlistRepository _repository;
-
-
-    public WishlistController (IWishlistRepository repository)
+    private readonly IWishlistService _wishlistService;
+    public WishlistController(IWishlistService wishlistService)
     {
-        _repository = repository;
+        _wishlistService = wishlistService;
+    }
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> AddToWishlist(AddToWishlistDto dto)
+    
+    [HttpPost("{productId}")]
+    public async Task<IActionResult> AddToWishlist(Guid productId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var item = new WishlistItem(
-           Guid.Parse(userId!),
-           dto.ProductId
-        );
+        await _wishlistService.AddToWishListAsync(GetUserId(),productId);
 
-        await _repository.AddAsync(item);
-
-        return Ok("product is added to wishlist");
+        return Success<object?>(null, "Product added to wishlist");
     }
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> RemoveFromWishist(Guid productId)
+    {
+        await _wishlistService.RemoveFromWishlistAsync(GetUserId(),productId);
 
+        return Success<object?>(null, "Product removed from wishlist");
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetUserWishlist()
+    {
+        var wishlist = await _wishlistService.GetUserWishListAsync(GetUserId());
 
+        return Success(wishlist, "Wishlist fetched successfully");
+    }
+    
 }

@@ -13,6 +13,16 @@ using Fitin.Application.Cart.Interfaces;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.Wishlist.Interfaces;
+using Fitin.Application.Common.Mappings;
+using Fitin.Application.Products.Services;
+using Fitin.Application.Cart.Services;
+using Fitin.Application.Wishlist.Services;
+using Fitin.API.Middleware;
+using Fitin.Application.Orders.Interface;
+using Fitin.Application.Orders.Service;
+using Fitin.Application.Common.Interfaces;
+using Fitin.Application.Users.Interfaces;
+using Fitin.Application.Users.Services;
 
 
 
@@ -35,13 +45,26 @@ builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
-
-    
+builder.Services.AddAutoMapper(
+    typeof(ProductProfile),
+    typeof(WishlistProfile),
+    typeof(CartProfile),
+    typeof(OrderProfile),
+    typeof(UserProfile)
+    );
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserManagementService , UserManagementService>();
 // JWT Authentication
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,7 +102,7 @@ builder.Services
 
 var app = builder.Build();
 
-// Swagger
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -89,7 +112,10 @@ if (app.Environment.IsDevelopment())
 // Middleware
 app.UseHttpsRedirection();
 
-app.UseAuthentication();   // IMPORTANT
+//Exception Middleware
+app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseAuthentication();  
 app.UseAuthorization();
 
 app.MapControllers();

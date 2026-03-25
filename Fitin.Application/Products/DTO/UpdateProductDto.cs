@@ -6,4 +6,5 @@ public class UpdateProductDto
     public decimal Price { get; set; }
     public string Category { get; set; } = null!;
     public int Stock { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 }

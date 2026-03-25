@@ -3,11 +3,12 @@ using Fitin.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly AuthService _authService;
 
@@ -19,25 +20,28 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequestDto dto)
     {
-        var result = await _authService.RegisterAsync(dto);
+        // var result = await _authService.RegisterAsync(dto);
 
-        Response.Cookies.Append("accessToken", result.AccessToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddMinutes(15)
-        });
+        // Response.Cookies.Append("accessToken", result.AccessToken, new CookieOptions
+        // {
+        //     HttpOnly = true,
+        //     Secure = false,
+        //     SameSite = SameSiteMode.Strict,
+        //     Expires = DateTime.UtcNow.AddMinutes(15)
+        // });
 
-        Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(1)
-        });
+        // Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
+        // {
+        //     HttpOnly = true,
+        //     Secure = false,
+        //     SameSite = SameSiteMode.Strict,
+        //     Expires = DateTime.UtcNow.AddDays(1)
+        // });
 
-        return Ok("Register successful");
+        // return Success(result, "Register successful");
+
+        await _authService.RegisterAsync(dto);
+        return Success<Object?>(null,"Register successfull. Please login");
     }
 
     [HttpPost("login")]
@@ -61,13 +65,13 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(1)
         });
 
-        return Ok("Login successful");
+        return Success(result, "Login successful");
     }
 
     [Authorize]
     [HttpGet("profile")]
     public IActionResult Profile()
     {
-        return Ok("You are authenticated");
+        return Success("You are authenticated", "Profile fetched successfully");
     }
 }

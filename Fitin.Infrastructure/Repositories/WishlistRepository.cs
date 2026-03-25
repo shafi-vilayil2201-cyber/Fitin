@@ -8,25 +8,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fitin.Infrastructure.Repositories;
 
-public class WishlistRepository : IWishlistRepository
+public class WishlistRepository : GenericRepository<WishlistItem>, IWishlistRepository
 {
     private readonly AppDbContext _context;
 
-    public WishlistRepository (AppDbContext context)
+    public WishlistRepository(AppDbContext context) : base(context)
     {
         _context = context;
     }
 
-    public async Task AddAsync(WishlistItem item)
+    public async Task<WishlistItem?> GetWishlistItemAsync(Guid userId, Guid productId)
     {
-        //To avoid adding the same product multiple times to wishlist.
-        var exists = await _context.WishlistItems
-        .AnyAsync(x => x.UserId == item.UserId && x.ProductId == item.ProductId);
-
-        if (exists)
-            return;
-        
-        await _context.WishlistItems.AddAsync(item);
-        await _context.SaveChangesAsync();
+        return await _context.WishlistItems
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
     }
+    public async Task<List<WishlistItem> >GetUserWishlistAsync(Guid userId)
+    {
+
+        return  await _context.WishlistItems
+            .Where(x=> x.UserId == userId)
+            .Include(x => x.Product)
+            .ToListAsync();
+    }
+
 }

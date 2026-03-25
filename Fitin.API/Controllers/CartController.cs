@@ -10,32 +10,57 @@ namespace Fitin.API.Controllers;
 
 [ApiController]
 [Route("api/cart")]
-public class CartController : ControllerBase
+[Authorize]
+public class CartController : BaseApiController
 {
-    private readonly ICartRepository _cartRepository;
+    private readonly ICartService _cartService;
 
-    public CartController(ICartRepository cartRepository)
+    public CartController(ICartService cartService)
     {
-        _cartRepository = cartRepository;
+        _cartService = cartService;
+    }
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> AddToCart(AddToCartDto dto)
+    [HttpPost("{productId}")]
+    public async Task<IActionResult> AddToCart(Guid productId)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var result = await _cartService.AddToCartAsync(GetUserId(), productId);
 
-        var CartItem = new CartItem(
-            Guid.Parse(userId!),
-            dto.ProductId,
-            dto.Quantity,
-            DateTime.UtcNow
-        );
+        return Success(result.Item, result.Message);
+    }
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> RemoveProduct(Guid productId)
+    {
+        await _cartService.RemoveFromCartAsync(GetUserId(), productId);
 
-        await _cartRepository.AddAsync(CartItem);
+        return Success<object?>(null, "Product removed from cart");
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetUserCart()
+    {
+        var cart = await _cartService.GetUserCartAsync(GetUserId());
 
-        return Ok("Product added to cart");
+        return Success<object>(cart, "Cart fetched successfully");
     }
 
+    [HttpPatch("increase/{productId}")]
+    public async Task<IActionResult> IncreaseQuantity(Guid productId)
+    {
+
+        var cart = await _cartService.IncreaseQuantityAsync(GetUserId(), productId);
+
+        return Success(cart, "Quantity increased");
+    }
+    [HttpPatch("decrease/{productId}")]
+    public async Task<IActionResult> DecreaseQuantity(Guid productId)
+    {
+
+        await _cartService.DecreaseQuantityAsync(GetUserId(), productId);
+
+        return Success<object?>(null, "Quantity decreased");
+    }
 
 }
