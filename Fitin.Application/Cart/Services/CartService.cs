@@ -23,8 +23,8 @@ public class CartService : ICartService
         _mapper = mapper;
         _productRepository = productRepository;
     }
-
-   public async Task<string> AddToCartAsync(Guid userId, Guid productId)
+    
+    public async Task<AddToCartResultDto> AddToCartAsync(Guid userId, Guid productId)
     {
         var product = await _productRepository.GetByIdAsync(productId);
 
@@ -38,14 +38,28 @@ public class CartService : ICartService
 
         if (cartItem != null)
         {
-            return "Item already in cart";
+            var existingCartItems = await _cartRepository.GetUserCartAsync(userId);
+            var existingItem = existingCartItems.FirstOrDefault(x => x.ProductId == productId);
+
+            return new AddToCartResultDto
+            {
+                Message = "Item already in cart",
+                Item = existingItem == null ? null : _mapper.Map<CartItemDto>(existingItem)
+            };
         }
 
         var newItem = new CartItem(userId, productId);
         await _cartRepository.AddAsync(newItem);
         await _cartRepository.SaveChangesAsync();
 
-        return "Product added to cart";
+        var cartItems = await _cartRepository.GetUserCartAsync(userId);
+        var addedItem = cartItems.FirstOrDefault(x => x.ProductId == productId);
+
+        return new AddToCartResultDto
+        {
+            Message = "Product added to cart",
+            Item = addedItem == null ? null : _mapper.Map<CartItemDto>(addedItem)
+        };
     }
 
 
