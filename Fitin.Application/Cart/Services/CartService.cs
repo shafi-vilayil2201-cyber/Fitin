@@ -24,7 +24,7 @@ public class CartService : ICartService
         _productRepository = productRepository;
     }
 
-    public async Task<IEnumerable<CartItemDto>> AddToCartAsync(Guid userId, Guid productId)
+   public async Task<string> AddToCartAsync(Guid userId, Guid productId)
     {
         var product = await _productRepository.GetByIdAsync(productId);
 
@@ -38,24 +38,16 @@ public class CartService : ICartService
 
         if (cartItem != null)
         {
-            if (cartItem.Quantity >= MAX_CART_QUANTITY)
-                throw new Exception("Maximum cart quantity reached");
-
-            if (cartItem.Quantity + 1 > product.Stock)
-                throw new Exception("Not enough stock available");
-
-            cartItem.IncreaseQuantity();
-        }
-        else
-        {
-            var newItem = new CartItem(userId, productId);
-            await _cartRepository.AddAsync(newItem);
+            return "Item already in cart";
         }
 
+        var newItem = new CartItem(userId, productId);
+        await _cartRepository.AddAsync(newItem);
         await _cartRepository.SaveChangesAsync();
-        var cartItems = await _cartRepository.GetUserCartAsync(userId);
-        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+
+        return "Product added to cart";
     }
+
 
     public async Task RemoveFromCartAsync(Guid userId, Guid productId)
     {
