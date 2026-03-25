@@ -18,7 +18,7 @@ public class AuthService
         _tokenGenerator = tokenGenerator;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
+    public async Task RegisterAsync(RegisterRequestDto dto)
     {
         var name = dto.Name.Trim();
         var email = dto.Email.Trim().ToLowerInvariant();
@@ -50,7 +50,7 @@ public class AuthService
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
 
-        return await GenerateTokensAsync(user);
+        // return await GenerateTokensAsync(user);
     }
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto dto)
     {
