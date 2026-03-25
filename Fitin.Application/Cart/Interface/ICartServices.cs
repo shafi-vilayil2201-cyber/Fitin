@@ -5,7 +5,7 @@ namespace Fitin.Application.Cart.Interfaces;
 
 public interface ICartService 
 {
-    Task<string> AddToCartAsync(Guid userId,Guid productId);
+    Task<AddToCartResultDto> AddToCartAsync(Guid userId,Guid productId);
     Task RemoveFromCartAsync(Guid userId,Guid productId);
     Task<IEnumerable<CartItemDto>> IncreaseQuantityAsync(Guid userId, Guid productId);
 

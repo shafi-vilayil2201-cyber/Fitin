@@ -6,6 +6,13 @@ public class AddToCartDto
     public Guid ProductId {get; set;}
 }
 
+public class AddToCartResultDto
+{
+    public string Message { get; set; } = string.Empty;
+
+    public CartItemDto? Item { get; set; }
+}
+
 public class CartItemDto
 {
     public Guid ProductId { get; set; }

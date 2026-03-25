@@ -27,9 +27,9 @@ public class CartController : BaseApiController
     [HttpPost("{productId}")]
     public async Task<IActionResult> AddToCart(Guid productId)
     {
-        var cart = await _cartService.AddToCartAsync(GetUserId(), productId);
+        var result = await _cartService.AddToCartAsync(GetUserId(), productId);
 
-        return Success(cart, "Product added to cart");
+        return Success(result.Item, result.Message);
     }
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveProduct(Guid productId)
