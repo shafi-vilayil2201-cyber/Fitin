@@ -2,15 +2,15 @@ namespace Fitin.Domain.Entities
 {
     public class RefreshToken
     {
-        public Guid Id{get; private set;}
-        public string Token{get; private set;}
-        public DateTime ExpiresAt{get; private set;}
-        public bool IsRevoked {get; private set;}
-        public Guid UserId {get; private set;}
+        public Guid Id { get; private set; }
+        public string Token { get; private set; }
+        public DateTime ExpiresAt { get; private set; }
+        public bool IsRevoked { get; private set; }
+        public Guid UserId { get; private set; }
 
-        private RefreshToken(){}
+        private RefreshToken() { }
 
-        public RefreshToken (string token, DateTime expiresAt,Guid userId )
+        public RefreshToken(string token, DateTime expiresAt, Guid userId)
         {
             Id = Guid.NewGuid();
             Token = token;

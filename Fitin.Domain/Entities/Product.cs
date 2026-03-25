@@ -1,25 +1,36 @@
 
-namespace Fitin.Domain.Entities.Product;
+using Fitin.Domain.Common;
 
-public class Product
+namespace Fitin.Domain.Entities.Products;
+
+public class Product : BaseEntity
 {
-    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public string Category { get; private set; }
     public int Stock { get; private set; }
+    public bool IsOutOfStock => Stock <= 0;
     public string ImageUrl { get; private set; } = string.Empty;
 
     private Product() { }
 
     public Product(string name, decimal price, string category, int stock, string imageUrl = "")
     {
-        Id = Guid.NewGuid();
         Name = name;
         Price = price;
         Category = category;
         Stock = stock;
         ImageUrl = imageUrl;
+    }
+
+    public void UpdateDetails(string name, decimal price, string category, int stock, string imageUrl = "")
+    {
+        Name = name;
+        Price = price;
+        Category = category;
+        Stock = stock;
+        ImageUrl = imageUrl;
+        MarkUpdated();
     }
 
     public void ReduceStock(int quantity)
