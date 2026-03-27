@@ -12,7 +12,7 @@ public class Product : BaseEntity
     public bool IsOutOfStock => Stock <= 0;
     public string ImageUrl { get; private set; } = string.Empty;
 
-    private Product() { }
+    private Product() { } 
 
     public Product(string name, decimal price, string category, int stock, string imageUrl = "")
     {

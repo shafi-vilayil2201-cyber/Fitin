@@ -14,7 +14,6 @@ namespace Fitin.API.Controllers;
 public class CartController : BaseApiController
 {
     private readonly ICartService _cartService;
-
     public CartController(ICartService cartService)
     {
         _cartService = cartService;
@@ -62,5 +61,4 @@ public class CartController : BaseApiController
 
         return Success<object?>(null, "Quantity decreased");
     }
-
 }
