@@ -15,16 +15,19 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
     {
         return await _dbSet
-            .Where(x => x.Category == category)
+            .Include(x => x.Category)
+            .Where(x => x.Category.Name == category)
             .ToListAsync();
     }
     public async Task<IEnumerable<Product>> GetProductsAsync(ProductQueryDto query)
     {
-        var products = _context.Products.AsQueryable();
+        var products = _context.Products
+            .Include(p => p.Category)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(query.Category))
         {
-            products = products.Where(p => p.Category == query.Category);
+            products = products.Where(p => p.Category.Name == query.Category);
         }
         if (!string.IsNullOrEmpty(query.Sort))
         {

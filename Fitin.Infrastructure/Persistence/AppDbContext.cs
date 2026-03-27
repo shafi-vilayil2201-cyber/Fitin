@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Fitin.Domain.Entities.CartItems;
 using Fitin.Domain.Entities.Wishlists;
 using CloudinaryDotNet.Actions;
+using Fitin.Domain.Entities.Categories;
 // using Fitin.Domain.Common;
 // using System.Linq.Expressions;
 
@@ -18,6 +19,7 @@ namespace Fitin.Infrastructure.Persistence
         public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<Category> Categories => Set<Category>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         
@@ -52,17 +54,21 @@ namespace Fitin.Infrastructure.Persistence
                     .IsRequired()
                     .HasMaxLength(200);
 
-                builder.Property(x => x.Category)
-                    .IsRequired();
-
                 builder.Property(x => x.Stock)
                     .IsRequired();
 
                 builder.Property(x => x.ImageUrl)
                     .IsRequired()
                     .HasDefaultValue(string.Empty);
+
+
                 builder.Property(x => x.Price)
                     .HasPrecision(18, 2);
+                
+                builder.HasOne(x=> x.Category)
+                    .WithMany()
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
             });
             modelBuilder.Entity<CartItem>(builder =>
@@ -147,6 +153,19 @@ namespace Fitin.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict);
 
             });
+
+            modelBuilder.Entity<Category>(builder =>
+            {
+                builder.HasKey(x=> x.Id);
+
+                builder.Property(x=>x.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                builder.HasIndex(x=> x.Name)
+                    .IsUnique();
+            });
+
             modelBuilder.Entity<Product>()
             .HasQueryFilter(x => !x.IsDeleted);
 

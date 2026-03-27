@@ -44,7 +44,13 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> CreateAsync(CreateProductDto dto)
     {
-        var product = _mapper.Map<Product>(dto);
+        var product = new Product(
+            dto.Name,
+            dto.Price,
+            dto.CategoryId,
+            dto.Stock,
+            dto.ImageUrl
+        );
 
         await _repository.AddAsync(product);
 
@@ -61,7 +67,7 @@ public class ProductService : IProductService
         product.UpdateDetails(
             dto.Name,
             dto.Price,
-            dto.Category,
+            dto.CategoryId,
             dto.Stock,
             dto.ImageUrl);
 
