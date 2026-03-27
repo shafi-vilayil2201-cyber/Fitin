@@ -35,7 +35,7 @@ public class ExceptionMiddleware
 
         var response = new ApiResponse<object>
         {
-            Success = false,
+            IsSuccess = false,
             Message = ex.Message,
             Data = null,
             Errors = null

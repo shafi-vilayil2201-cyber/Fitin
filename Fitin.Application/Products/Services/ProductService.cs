@@ -54,7 +54,8 @@ public class ProductService : IProductService
 
         await _repository.AddAsync(product);
 
-        return _mapper.Map<ProductDto>(product);
+        var createdProduct = await _repository.GetByIdAsync(product.Id);
+        return _mapper.Map<ProductDto>(createdProduct ?? product);
     }
 
     public async Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto)
@@ -73,7 +74,8 @@ public class ProductService : IProductService
 
         await _repository.UpdateAsync(product);
 
-        return _mapper.Map<ProductDto>(product);
+        var updatedProduct = await _repository.GetByIdAsync(id);
+        return _mapper.Map<ProductDto>(updatedProduct ?? product);
     }
 
     public async Task DeleteAsync(Guid id)
