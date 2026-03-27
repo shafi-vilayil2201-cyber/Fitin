@@ -1,6 +1,6 @@
 using Fitin.Domain.Common;
 
-namespace Fitin.Domain.Entities.Category;
+namespace Fitin.Domain.Entities.Categories;
 
 public class Category : BaseEntity
 {
