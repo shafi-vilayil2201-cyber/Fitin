@@ -4,7 +4,7 @@ using Fitin.Domain.Entities.Categories;
 
 namespace Fitin.Application.Categories.Interface;
 
-public class ICategoryRepository
+public interface ICategoryRepository
 {
     Task<IEnumerable<Category>> GetAllAsync();
     Task<Category?> GetByIdAsync(Guid id);
@@ -13,3 +13,4 @@ public class ICategoryRepository
     Task UpdateAsync(Category category);
     Task DeleteAsync(Category category);
 }
+
