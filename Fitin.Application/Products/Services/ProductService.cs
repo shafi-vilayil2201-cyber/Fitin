@@ -53,7 +53,14 @@ public class ProductService : IProductService
             dto.Price,
             dto.CategoryId,
             dto.Stock,
-            dto.ImageUrl
+            dto.ImageUrl,
+            dto.Brand,
+            dto.Sport,
+            dto.Description,
+            dto.ShortDescription,
+            dto.LongDescription,
+            dto.Rating,
+            dto.Discount
         );
 
         await _repository.AddAsync(product);
@@ -79,7 +86,14 @@ public class ProductService : IProductService
             dto.Price,
             dto.CategoryId,
             dto.Stock,
-            dto.ImageUrl);
+            dto.ImageUrl,
+            dto.Brand,
+            dto.Sport,
+            dto.Description,
+            dto.ShortDescription,
+            dto.LongDescription,
+            dto.Rating,
+            dto.Discount);
 
         await _repository.UpdateAsync(product);
 

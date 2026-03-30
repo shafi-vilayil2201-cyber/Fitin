@@ -61,6 +61,38 @@ namespace Fitin.Infrastructure.Persistence
                     .IsRequired()
                     .HasDefaultValue(string.Empty);
 
+                builder.Property(x => x.Brand)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Sport)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Description)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.ShortDescription)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.LongDescription)
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Rating)
+                    .HasPrecision(4, 2)
+                    .HasDefaultValue(0m);
+
+                builder.Property(x => x.Discount)
+                    .HasPrecision(5, 2)
+                    .HasDefaultValue(0m);
 
                 builder.Property(x => x.Price)
                     .HasPrecision(18, 2);
