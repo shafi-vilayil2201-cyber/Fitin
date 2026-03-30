@@ -23,6 +23,8 @@ using Fitin.Application.Orders.Service;
 using Fitin.Application.Common.Interfaces;
 using Fitin.Application.Users.Interfaces;
 using Fitin.Application.Users.Services;
+using Fitin.Application.Categories.Interface;
+using Fitin.Application.Categories.Services;
 
 
 
@@ -65,6 +67,8 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserManagementService , UserManagementService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 // JWT Authentication
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -2,20 +2,26 @@ using AutoMapper;
 using Fitin.Domain.Entities.Products;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Products.Dto;
+using Fitin.Application.Common.Exceptions;
+using Fitin.Application.Categories.Interface;
 
 namespace Fitin.Application.Products.Services;
 
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
+    private readonly ICategoryRepository _categoryRepo;
     private readonly IMapper _mapper;
+   
 
     public ProductService(
         IProductRepository repository,
-        IMapper mapper)
+        IMapper mapper,
+        ICategoryRepository categoryRepository)
     {
         _repository = repository;
         _mapper = mapper;
+        _categoryRepo = categoryRepository;
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllAsync()
@@ -44,6 +50,11 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> CreateAsync(CreateProductDto dto)
     {
+        var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
+
+        if(category == null)
+            throw new NotFoundException("Category not found");
+        
         var product = new Product(
             dto.Name,
             dto.Price,
@@ -60,6 +71,11 @@ public class ProductService : IProductService
 
     public async Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto)
     {
+        var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
+
+        if(category == null)
+            throw new NotFoundException("Category not found");
+            
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
