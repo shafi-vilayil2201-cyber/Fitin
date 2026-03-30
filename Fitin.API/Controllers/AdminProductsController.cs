@@ -38,14 +38,14 @@ public class AdminProductsController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
+    public async Task<IActionResult> Create([FromForm] CreateProductDto dto)
     {
         var product = await _productService.CreateAsync(dto);
         return CreatedResponse(product, "Product created successfully");
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductDto dto)
     {
         var product = await _productService.UpdateAsync(id, dto);
 

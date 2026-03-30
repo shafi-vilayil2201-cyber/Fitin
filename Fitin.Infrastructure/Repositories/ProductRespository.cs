@@ -12,20 +12,31 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
     public ProductRepository(AppDbContext context) : base(context)
     {
     }
-    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
+
+    public new async Task<Product?> GetByIdAsync(Guid id)
     {
         return await _dbSet
-            .Where(x => x.Category == category)
+            .Include(x => x.Category)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public new async Task<IEnumerable<Product>> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(x => x.Category)
             .ToListAsync();
     }
     public async Task<IEnumerable<Product>> GetProductsAsync(ProductQueryDto query)
     {
-        var products = _context.Products.AsQueryable();
+        var products = _context.Products
+            .Include(p => p.Category)
+            .AsQueryable();
 
-        if (!string.IsNullOrEmpty(query.Category))
+       if (query.CategoryId.HasValue)
         {
-            products = products.Where(p => p.Category == query.Category);
+            products = products.Where(p => p.CategoryId == query.CategoryId.Value);
         }
+
         if (!string.IsNullOrEmpty(query.Sort))
         {
             switch (query.Sort.ToLower())

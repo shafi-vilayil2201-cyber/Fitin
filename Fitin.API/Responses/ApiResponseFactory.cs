@@ -8,7 +8,7 @@ public static class ApiResponseFactory
     {
         return new OkObjectResult(new ApiResponse<T>
         {
-            Success = true,
+            IsSuccess = true,
             Message = message,
             Data = data,
             Errors = null
@@ -18,9 +18,9 @@ public static class ApiResponseFactory
     {
         return new ObjectResult(new ApiResponse<T>
         {
-            Success = true,
+            IsSuccess = true,
             Message = message,
-            Data = data
+            Data = data 
         })
         {StatusCode = StatusCodes.Status201Created};
     }
@@ -28,7 +28,7 @@ public static class ApiResponseFactory
     {
         return new ObjectResult(new ApiResponse<object>
         {
-            Success = false,
+            IsSuccess = false,
             Message = message,
             Errors = errors
         })
