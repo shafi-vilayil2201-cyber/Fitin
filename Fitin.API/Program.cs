@@ -52,21 +52,22 @@ builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<IWishlistRepository , WishlistRepository>();
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 builder.Services.AddAutoMapper(
     typeof(ProductProfile),
     typeof(WishlistProfile),
     typeof(CartProfile),
     typeof(OrderProfile),
-    typeof(UserProfile)
+    typeof(UserProfile),
+    typeof(CategoryProfile)
     );
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserManagementService , UserManagementService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 // JWT Authentication
@@ -119,7 +120,7 @@ app.UseHttpsRedirection();
 //Exception Middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseAuthentication();  
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

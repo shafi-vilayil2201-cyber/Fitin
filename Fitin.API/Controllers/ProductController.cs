@@ -21,7 +21,7 @@ public class ProductsController : BaseApiController
         return Success(products,"Products retrieved successfully");
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var product = await _service.GetByIdAsync(id);
@@ -32,12 +32,6 @@ public class ProductsController : BaseApiController
         return Success(product,"Product retrieved successfully");
     }
 
-    [HttpGet("category/{category}")]
-    public async Task<IActionResult> GetByCategory(string category)
-    {
-        var products = await _service.GetByCategoryAsync(category);
-        return Success(products,"Products retrieved by category");
-    }
     [HttpGet("search")]
     public async Task<IActionResult> GetProduct([FromQuery]ProductQueryDto query)
     {
