@@ -36,7 +36,7 @@ public class CartRepository : ICartRepository
     }
     public async Task RemoveAsync(CartItem item)
     {
-        _context.CartItems.Remove(item);
+         _context.CartItems.Remove(item);
     }
     public async Task SaveChangesAsync()
     {

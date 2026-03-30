@@ -7,12 +7,12 @@ public class RegisterRequestDto
     [Required]
     [MinLength(2)]
     [MaxLength(100)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "FITIN";
 
     [Required]
     [EmailAddress]
     [MaxLength(256)]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; } = "Fitin@Gmail.com";
 
     [Required]
     [MinLength(8)]
@@ -20,5 +20,5 @@ public class RegisterRequestDto
     [RegularExpression(
         @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$",
         ErrorMessage = "Password must contain uppercase, lowercase, number, and special character.")]
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; set; } = "Sample@123";
 }

@@ -8,8 +8,6 @@ public interface IProductService
 
     Task<ProductDto?> GetByIdAsync(Guid id);
 
-    Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category);
-
     Task<ProductDto> CreateAsync(CreateProductDto dto);
 
     Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto);

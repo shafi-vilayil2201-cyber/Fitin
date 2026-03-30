@@ -2,20 +2,26 @@ using AutoMapper;
 using Fitin.Domain.Entities.Products;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Products.Dto;
+using Fitin.Application.Common.Exceptions;
+using Fitin.Application.Categories.Interface;
 
 namespace Fitin.Application.Products.Services;
 
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
+    private readonly ICategoryRepository _categoryRepo;
     private readonly IMapper _mapper;
+   
 
     public ProductService(
         IProductRepository repository,
-        IMapper mapper)
+        IMapper mapper,
+        ICategoryRepository categoryRepository)
     {
         _repository = repository;
         _mapper = mapper;
+        _categoryRepo = categoryRepository;
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllAsync()
@@ -35,24 +41,34 @@ public class ProductService : IProductService
         return _mapper.Map<ProductDto>(product);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category)
-    {
-        var products = await _repository.GetByCategoryAsync(category);
-
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
-
     public async Task<ProductDto> CreateAsync(CreateProductDto dto)
     {
-        var product = _mapper.Map<Product>(dto);
+        var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
+
+        if(category == null)
+            throw new NotFoundException("Category not found");
+        
+        var product = new Product(
+            dto.Name,
+            dto.Price,
+            dto.CategoryId,
+            dto.Stock,
+            dto.ImageUrl
+        );
 
         await _repository.AddAsync(product);
 
-        return _mapper.Map<ProductDto>(product);
+        var createdProduct = await _repository.GetByIdAsync(product.Id);
+        return _mapper.Map<ProductDto>(createdProduct ?? product);
     }
 
     public async Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto)
     {
+        var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
+
+        if(category == null)
+            throw new NotFoundException("Category not found");
+
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
@@ -61,13 +77,14 @@ public class ProductService : IProductService
         product.UpdateDetails(
             dto.Name,
             dto.Price,
-            dto.Category,
+            dto.CategoryId,
             dto.Stock,
             dto.ImageUrl);
 
         await _repository.UpdateAsync(product);
 
-        return _mapper.Map<ProductDto>(product);
+        var updatedProduct = await _repository.GetByIdAsync(id);
+        return _mapper.Map<ProductDto>(updatedProduct ?? product);
     }
 
     public async Task DeleteAsync(Guid id)
@@ -79,7 +96,7 @@ public class ProductService : IProductService
 
         await _repository.DeleteAsync(product);
     }
-    public async Task<IEnumerable<ProductDto?>> GetProductsAsync(ProductQueryDto query)
+    public async Task<IEnumerable<ProductDto>> GetProductsAsync(ProductQueryDto query)
     {
         var products = await _repository.GetProductsAsync(query);
         return _mapper.Map<IEnumerable<ProductDto>>(products);

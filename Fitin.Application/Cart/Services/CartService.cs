@@ -13,7 +13,7 @@ public class CartService : ICartService
     private readonly IProductRepository _productRepository;
 
     private const int MAX_CART_QUANTITY = 10;
-
+    
     public CartService(
         ICartRepository cartRepository,
         IMapper mapper,
