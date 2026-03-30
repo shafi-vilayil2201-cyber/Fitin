@@ -1,6 +1,4 @@
-
-
-using CloudinaryDotNet.Actions;
+using Fitin.Application.Categories.DTOs;
 using Fitin.Application.Categories.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,50 +22,48 @@ public class CategoryController : BaseApiController
     public async Task<IActionResult> GetAll()
     {
         var categories = await _service.GetAllAsync();
-        return Success(categories,"Category retrieved successfully");
+        return Success(categories,"Categories retrieved successfully");
     }
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id )
     {
-        var category =await _service.GetByIdAsync(id);
+        var category = await _service.GetByIdAsync(id);
 
         if(category == null)
         {
             return Failure("Category not found",null,404);
         }
-        return Success(category,"Category retirved successfully");
+        return Success(category,"Category retrieved successfully");
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm]CreateCategoryDto dto)
+    public async Task<IActionResult> Create([FromForm] CreateCategoryDto dto)
     {
         var category = await _service.CreateAsync(dto);
-        return Success(category,"Category Added Succefully");
+        return CreatedResponse(category,"Category Added Successfully");
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id , CreateCategoryDto dto)
+    public async Task<IActionResult> Update(Guid id ,[FromForm] UpdateCategoryDto dto)
     {
-        var category= await _service.GetByIdAsync(id);
-
-        if(category == null)
-            return Failure("Category not Found",null,404);
+        var category= await _service.UpdateAsync(id,dto);
             
         return Success(category,"Category updated successfully");
     }
+
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var category = await _service.GetByIdAsync(id);
-        
+
         if (category == null)
             return Failure("Category not found", null,404);
 
         await _service.DeleteAsync(id);
-        return Success<object?>(null,"Category deleted successfully");
+        return Success<object?>(null, "Category deleted successfully");
     }
 
 }
