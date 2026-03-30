@@ -2,7 +2,9 @@
 
 
 using AutoMapper;
+using Fitin.Application.Categories.DTOs;
 using Fitin.Application.Categories.Interface;
+using Fitin.Application.Common.Exceptions;
 using Fitin.Domain.Entities.Categories;
 
 namespace Fitin.Application.Categories.Services;
@@ -40,7 +42,7 @@ public class CategoryService : ICategoryService
         var existing = await _categoryRepo.GetByNameAsync(dto.Name);
 
         if (existing != null)
-             throw new Exception("Category already existing");
+             throw new BadRequestException("Category already exists");
 
         var category = new Category(dto.Name);
         await _categoryRepo.AddAsync(category);
@@ -54,7 +56,12 @@ public class CategoryService : ICategoryService
         var category = await _categoryRepo.GetByIdAsync(id);
         
         if(category == null)
-            return null;
+           throw new NotFoundException("Category not found");
+
+        var existing = await _categoryRepo.GetByNameAsync(dto.Name);
+
+        if (existing != null && existing.Id != id)
+            throw new BadRequestException("Category already exists");
         
         category.UpdateName(dto.Name);
         await _categoryRepo.UpdateAsync(category);

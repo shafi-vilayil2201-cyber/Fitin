@@ -26,14 +26,6 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(x => x.Category)
             .ToListAsync();
     }
-
-    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
-    {
-        return await _dbSet
-            .Include(x => x.Category)
-            .Where(x => x.Category.Name == category)
-            .ToListAsync();
-    }
     public async Task<IEnumerable<Product>> GetProductsAsync(ProductQueryDto query)
     {
         var products = _context.Products

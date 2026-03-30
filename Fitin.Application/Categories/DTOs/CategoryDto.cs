@@ -1,4 +1,4 @@
-
+namespace Fitin.Application.Categories.DTOs;
 
 public class CategoryDto
 {

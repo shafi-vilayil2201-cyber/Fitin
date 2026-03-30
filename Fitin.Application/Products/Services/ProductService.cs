@@ -41,13 +41,6 @@ public class ProductService : IProductService
         return _mapper.Map<ProductDto>(product);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category)
-    {
-        var products = await _repository.GetByCategoryAsync(category);
-
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
-
     public async Task<ProductDto> CreateAsync(CreateProductDto dto)
     {
         var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
@@ -75,7 +68,7 @@ public class ProductService : IProductService
 
         if(category == null)
             throw new NotFoundException("Category not found");
-            
+
         var product = await _repository.GetByIdAsync(id);
 
         if (product == null)
@@ -103,7 +96,7 @@ public class ProductService : IProductService
 
         await _repository.DeleteAsync(product);
     }
-    public async Task<IEnumerable<ProductDto?>> GetProductsAsync(ProductQueryDto query)
+    public async Task<IEnumerable<ProductDto>> GetProductsAsync(ProductQueryDto query)
     {
         var products = await _repository.GetProductsAsync(query);
         return _mapper.Map<IEnumerable<ProductDto>>(products);
