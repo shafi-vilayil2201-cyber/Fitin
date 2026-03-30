@@ -1,5 +1,7 @@
 
 
+using Fitin.Application.Categories.DTOs;
+
 namespace Fitin.Application.Categories.Interface;
 
 public interface ICategoryService
