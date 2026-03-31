@@ -4,5 +4,9 @@ public record AuthResponseDto(
     string AccessToken,
     string RefreshToken,
     DateTime AccessTokenExpiresAt,
-    DateTime RefreshTokenExpiresAt
+    DateTime RefreshTokenExpiresAt,
+    Guid UserId,
+    string Name,
+    string Email,
+    string Role
     );
