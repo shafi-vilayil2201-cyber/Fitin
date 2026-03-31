@@ -95,8 +95,12 @@ public class AuthService
             accessToken, 
             refreshToken,
             AccessTokenExpiresAt,
-            RefreshTokenExpiresAt);
-
+            RefreshTokenExpiresAt,
+            user.Id,
+            user.Name,
+            user.Email,
+            user.Role.ToString()
+        );
     }
 
     private static bool IsValidPassword(string password)
