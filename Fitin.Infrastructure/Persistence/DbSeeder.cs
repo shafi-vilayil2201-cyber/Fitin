@@ -1,6 +1,7 @@
 using Fitin.Domain.Entities;
 using Fitin.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Fitin.Domain.Entities.Categories;
 
 namespace Fitin.Infrastructure.Persistence;
 
@@ -19,7 +20,19 @@ public static class DbSeeder
             passwordHash,
             UserRole.Admin
         );
+              var categories = new List<Category>
+        {
+            new Category("Running", "https://your-image-url.com/running.jpg"),
+        }; // Added the ; here
+
+        // Add this to actually save them:
+        if (!context.Categories.Any()) 
+        {
+            await context.Categories.AddRangeAsync(categories);
+        }
+
         await context.Users.AddAsync(admin);
         await context.SaveChangesAsync();
+
     }
 }
