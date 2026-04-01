@@ -75,7 +75,7 @@ public class AuthController : BaseApiController
         var user = new {
             Id = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
             Name = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value,
-            Email = User.FindFirst(Microsoft.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value,
+            Email = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value,
             Role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
         };
         return Success(user, "Profile fetched successfully");
