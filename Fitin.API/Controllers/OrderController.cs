@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Fitin.Application.Orders.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Fitin.Application.Orders.DTOs;
 
 namespace Fitin.API.Controllers;
 
@@ -26,9 +27,9 @@ public class OrderController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder()
+    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
     {
-        var result = await _orderService.CreateOrderAsync(GetUserId());
+        var result = await _orderService.CreateOrderAsync(GetUserId(),dto);
 
         return CreatedResponse(result,"Order created successfully");
     }
