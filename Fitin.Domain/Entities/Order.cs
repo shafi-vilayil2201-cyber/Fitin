@@ -8,17 +8,27 @@ public class Order : BaseEntity
     public Guid UserId{get; private set;}
     public decimal TotalAmount {get; private set;}
     public string Status {get;private set;} = "Pending";
+    public string ShippingName { get; private set; } = string.Empty;
+    public string ShippingAddress { get; private set; } = string.Empty;
+    public string ShippingCity { get; private set; } = string.Empty;
+    public string ShippingPostalCode { get; private set; } = string.Empty;
+    public string ShippingPhone { get; private set; } = string.Empty;
 
     public ICollection<OrderItem> OrderItems {get; private set;} = new List<OrderItem>();
 
     private Order(){}
-
-    public Order(Guid userId,decimal totalAmount)
+    public Order(Guid userId, decimal totalAmount, string shippingName, string shippingAddress, string shippingCity, string shippingPostalCode, string shippingPhone)
     {
         UserId = userId;
-        TotalAmount  = totalAmount;
+        TotalAmount = totalAmount;
         Status = "Pending";
+        ShippingName = shippingName;
+        ShippingAddress = shippingAddress;
+        ShippingCity = shippingCity;
+        ShippingPostalCode = shippingPostalCode;
+        ShippingPhone = shippingPhone;
     }
+
 
     public void AddOrderItem(OrderItem orderItem)
     {
