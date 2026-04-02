@@ -35,7 +35,7 @@ public class OrderService : IOrderService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<CreateOrderResponseDto> CreateOrderAsync(Guid userId)
+    public async Task<CreateOrderResponseDto> CreateOrderAsync(Guid userId,CreateOrderDto dto)
     {
         var cartItems = (await _cartRepository.GetUserCartAsync(userId)).ToList();
 
@@ -59,7 +59,7 @@ public class OrderService : IOrderService
             cartData.Add((cartItem,product));
         }
 
-         var order = new Order(userId,totalAmount);
+        var order = new Order(userId, totalAmount, dto.ShippingName, dto.ShippingAddress, dto.ShippingCity, dto.ShippingPostalCode, dto.ShippingPhone);
 
         foreach (var item in cartData)
         {
