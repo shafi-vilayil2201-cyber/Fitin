@@ -68,8 +68,10 @@ public class OrderService : IOrderService
                 order.Id,
                 item.Product.Id,
                 item.Product.Name,
+                item.Product.ImageUrl,
                 item.Product.Price,
                 item.CartItem.Quantity
+
             );
 
             order.AddOrderItem(orderItem);
