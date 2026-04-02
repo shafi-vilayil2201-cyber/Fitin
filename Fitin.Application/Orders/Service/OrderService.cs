@@ -102,6 +102,18 @@ public class OrderService : IOrderService
         
         return _mapper.Map<OrderDto>(order);
     }
+    public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
+    {
+        var orders = await _orderRepository.GetAllOrdersAsync();
+        return _mapper.Map<IEnumerable<OrderDto>>(orders);
+    }
+    public async Task UpdateOrderStatusAsync(Guid orderId ,string status)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        if(order== null) throw new NotFoundException("Order not Found");
+        order.UpdateStatus(status);
+        await _unitOfWork.SaveChangesAsync();
+    }
 
 
 }
