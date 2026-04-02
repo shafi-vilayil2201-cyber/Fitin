@@ -51,4 +51,20 @@ public class OrderController : BaseApiController
         return Success(order,"Order fetched successfully");
         
     }
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        var orders = await _orderService.GetAllOrdersAsync();
+        return Success(orders, "All orders fetched");
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateOrderStatusDto dto)
+    {
+        await _orderService.UpdateOrderStatusAsync(id, dto.Status);
+        return Success("Order status updated");
+    }
+
 }
