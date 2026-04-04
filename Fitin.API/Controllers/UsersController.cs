@@ -3,6 +3,7 @@ using Fitin.Application.Users.DTOs;
 using Fitin.Application.Users.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fitin.API.Controllers;
 
@@ -46,8 +47,22 @@ public class UsersController : BaseApiController
     [HttpPatch("{id:guid}/block")]
     public async Task<IActionResult> BlockUser(Guid id)
     {
+        var currentUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(currentUserIdStr, out var currentUserId))
+        {
+            if (id == currentUserId)
+                return Failure("You cannot block your own account");
+        }
+
+        var targetUser = await _service.GetUserByIdAsync(id);
+        if (targetUser == null)
+            return Failure("User not found", statusCode: 404);
+
+        if (targetUser.Role == Fitin.Domain.Enums.UserRole.Admin)
+            return Failure("Administrative accounts cannot be blocked");
+
         await _service.BlockUserAsync(id);
-        return Success<object?> (null,"User blocked successfully");
+        return Success<object?>(null, "User blocked successfully");
     }
 
     [HttpPatch("{id:guid}/unblock")]

@@ -35,48 +35,66 @@ public class OrderService : IOrderService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<CreateOrderResponseDto> CreateOrderAsync(Guid userId,CreateOrderDto dto)
+    public async Task<CreateOrderResponseDto> CreateOrderAsync(Guid userId, CreateOrderDto dto)
     {
-        var cartItems = (await _cartRepository.GetUserCartAsync(userId)).ToList();
+        var itemsToOrder = new List<(Guid ProductId, int Quantity)>();
 
-        if (!cartItems.Any())
-            throw new BadRequestException("Cart is empty");
+        if (dto.ProductId.HasValue)
+        {
+            // Direct purchase mode
+            itemsToOrder.Add((dto.ProductId.Value, dto.Quantity));
+        }
+        else
+        {
+            // Cart-based mode
+            var cartItems = await _cartRepository.GetUserCartAsync(userId);
+            if (!cartItems.Any())
+                throw new BadRequestException("Cart is empty");
+
+            itemsToOrder.AddRange(cartItems.Select(c => (c.ProductId, c.Quantity)));
+        }
 
         decimal totalAmount = 0m;
-        var cartData = new List<(CartItem CartItem,Product Product)>();
+        var orderData = new List<(Product Product, int Quantity)>();
 
-        foreach (var cartItem in cartItems)
+        foreach (var item in itemsToOrder)
         {
-            var product = await _productRepository.GetByIdAsync(cartItem.ProductId);
+            var product = await _productRepository.GetByIdAsync(item.ProductId);
 
             if (product == null)
-                throw new NotFoundException($"Product not found: {cartItem.ProductId}");
+                throw new NotFoundException($"Product not found: {item.ProductId}");
 
-            if(product.Stock < cartItem.Quantity)
-                throw new BadRequestException($"not enough stock: {product.Name} ");
+            if (product.Stock < item.Quantity)
+                throw new BadRequestException($"Not enough stock: {product.Name}");
 
-            totalAmount += product.Price * cartItem.Quantity;
-            cartData.Add((cartItem,product));
+            totalAmount += product.Price * item.Quantity;
+            orderData.Add((product, item.Quantity));
         }
 
         var order = new Order(userId, totalAmount, dto.ShippingName, dto.ShippingAddress, dto.ShippingCity, dto.ShippingPostalCode, dto.ShippingPhone);
 
-        foreach (var item in cartData)
+        foreach (var data in orderData)
         {
-            
             var orderItem = new OrderItem(
                 order.Id,
-                item.Product.Id,
-                item.Product.Name,
-                item.Product.ImageUrl,
-                item.Product.Price,
-                item.CartItem.Quantity
-
+                data.Product.Id,
+                data.Product.Name,
+                data.Product.ImageUrl,
+                data.Product.Price,
+                data.Quantity
             );
 
             order.AddOrderItem(orderItem);
-            item.Product.ReduceStock(item.CartItem.Quantity);
-            await _cartRepository.RemoveAsync(item.CartItem);
+            data.Product.ReduceStock(data.Quantity);
+
+            // If it was a cart order, remove from cart
+            if (!dto.ProductId.HasValue)
+            {
+                var cartItem = (await _cartRepository.GetUserCartAsync(userId))
+                    .FirstOrDefault(c => c.ProductId == data.Product.Id);
+                if (cartItem != null)
+                    await _cartRepository.RemoveAsync(cartItem);
+            }
         }
         await _orderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
