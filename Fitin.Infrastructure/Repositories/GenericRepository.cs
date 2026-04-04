@@ -1,7 +1,7 @@
-
 using Fitin.Application.Common.Interfaces;
 using Fitin.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Fitin.Domain.Common;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
@@ -34,7 +34,15 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     }
     public async Task DeleteAsync(T entity)
     {
-        _dbSet.Remove(entity);
+        if (entity is BaseEntity deletable)
+        {
+            deletable.MarkDeleted();
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+        else
+        {
+            _dbSet.Remove(entity);
+        }
         await _context.SaveChangesAsync();
     }
 }
