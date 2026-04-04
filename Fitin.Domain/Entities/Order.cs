@@ -34,9 +34,26 @@ public class Order : BaseEntity
     {
         OrderItems.Add(orderItem);
     }
-    public void UpdateStatus(string status)
+    public void UpdateStatus(string newStatus)
     {
-        Status = status;
+        if (Status == "Delivered" || Status == "Cancelled")
+        {
+            throw new InvalidOperationException($"Cannot change status from terminal state: {Status}");
+        }
+
+        bool isValid = Status switch
+        {
+            "Pending" => newStatus == "Processing" || newStatus == "Cancelled",
+            "Processing" => newStatus == "Delivered" || newStatus == "Cancelled",
+            _ => false
+        };
+
+        if (!isValid)
+        {
+            throw new InvalidOperationException($"Invalid status transition from {Status} to {newStatus}");
+        }
+
+        Status = newStatus;
         MarkUpdated();
     }
 
