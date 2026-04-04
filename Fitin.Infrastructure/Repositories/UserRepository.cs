@@ -48,6 +48,7 @@ namespace Fitin.Infrastructure.Repositories;
             return await _context.Users
                 .Include(x => x.Orders)
                     .ThenInclude(o => o.OrderItems)
+                .Include(x => x.CartItems)
                 .FirstOrDefaultAsync(x=> x.Id == userId);
         }
 
