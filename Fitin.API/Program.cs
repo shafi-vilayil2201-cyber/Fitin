@@ -25,6 +25,8 @@ using Fitin.Application.Users.Interfaces;
 using Fitin.Application.Users.Services;
 using Fitin.Application.Categories.Interface;
 using Fitin.Application.Categories.Services;
+using Fitin.Application.Payments.Interfaces;
+using Fitin.Application.Payments.Services;
 
 
 
@@ -63,13 +65,16 @@ builder.Services.AddAutoMapper(
     );
 
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IWishlistService, WishlistService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IImageService, CloudinaryImageService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 // JWT Authentication
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -110,7 +115,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
     policy =>
     {
-        policy.WithOrigins("http://localhost:5173","http://localhost:5174","http://localhost:5175","http://localhost:3000")
+        policy.WithOrigins(
+                    "http://localhost:5173",
+                    "http://localhost:5174",
+                    "http://localhost:5175",
+                    "http://localhost:3000",
+                    "https://fitin-com-psi.vercel.app"
+                )
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

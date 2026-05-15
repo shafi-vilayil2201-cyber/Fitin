@@ -6,6 +6,7 @@ using Fitin.Application.Common.Exceptions;
 using Fitin.Application.Common.Interfaces;
 using Fitin.Application.Orders.DTOs;
 using Fitin.Application.Orders.Interface;
+using Fitin.Application.Payments.Interfaces;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Domain.Entities;
 using Fitin.Domain.Entities.CartItems;
@@ -18,6 +19,7 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly ICartRepository _cartRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IPaymentService _paymentService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -25,12 +27,14 @@ public class OrderService : IOrderService
         IOrderRepository orderRepository,
         ICartRepository cartRepository,
         IProductRepository productRepository,
+        IPaymentService paymentService,
         IMapper mapper,
         IUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository;
         _cartRepository = cartRepository;
         _productRepository = productRepository;
+        _paymentService = paymentService;
         _mapper= mapper;
         _unitOfWork = unitOfWork;
     }
@@ -74,6 +78,10 @@ public class OrderService : IOrderService
             data.Product.ReduceStock(data.Quantity);
         }
 
+        // Create Razorpay Order
+        var razorpayOrderId = await _paymentService.CreateOrderAsync(order.TotalAmount, order.Id.ToString());
+        order.SetRazorpayOrderId(razorpayOrderId);
+
         await _orderRepository.AddAsync(order);
 
         // Cleanup cart if this order matches cart items
@@ -93,9 +101,32 @@ public class OrderService : IOrderService
         {
             OrderId = order.Id,
             TotalAmount = order.TotalAmount,
-            Status = order.Status
+            Status = order.Status,
+            RazorpayOrderId = order.RazorpayOrderId
         };
     }
+
+    public async Task<bool> ConfirmPaymentAsync(ConfirmPaymentDto dto)
+    {
+        var order = await _orderRepository.GetByIdAsync(dto.OrderId);
+        if (order == null) throw new NotFoundException("Order not found");
+
+        var isValid = _paymentService.VerifyPayment(dto.RazorpayOrderId, dto.RazorpayPaymentId, dto.RazorpaySignature);
+
+        if (isValid)
+        {
+            order.MarkAsPaid(dto.RazorpayPaymentId, dto.RazorpaySignature);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+        else
+        {
+            order.MarkAsFailed();
+            await _unitOfWork.SaveChangesAsync();
+            return false;
+        }
+    }
+
     public async Task<IEnumerable<OrderDto>> GetUserOrderAsync(Guid userId)
     {
         var orders = await _orderRepository.GetUserOrdersAsync(userId);
