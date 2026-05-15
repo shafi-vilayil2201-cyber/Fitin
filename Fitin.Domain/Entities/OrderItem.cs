@@ -11,6 +11,7 @@ public class OrderItem : BaseEntity
     public Guid ProductId{get; private set;}
 
     public string ProductName{get; private set;} = string.Empty;
+    public string ProductImageUrl{get; private set;} =string.Empty;
     public decimal UnitPrice{get; private set;}
     public int Quantity {get; private set;}
 
@@ -19,14 +20,17 @@ public class OrderItem : BaseEntity
 
     private OrderItem(){}
 
-    public OrderItem(Guid orderId,Guid productId,string productName,decimal unitPrice,int quantity)
+    // Move productImageUrl to the 4th position
+    public OrderItem(Guid orderId, Guid productId, string productName, string productImageUrl, decimal unitPrice, int quantity)
     {
         OrderId = orderId;
         ProductId = productId;
         ProductName = productName;
+        ProductImageUrl = productImageUrl; // This matches the 4th argument now
         UnitPrice = unitPrice;
         Quantity = quantity;
     }
+
     public decimal GetTotal()
     {
         return UnitPrice * Quantity;

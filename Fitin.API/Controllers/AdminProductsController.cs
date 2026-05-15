@@ -38,15 +38,27 @@ public class AdminProductsController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] CreateProductDto dto)
+    public async Task<IActionResult> Create([FromForm] CreateProductDto dto, IFormFile? image)
     {
+        if (image != null)
+        {
+            using var stream = image.OpenReadStream();
+            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+        }
+
         var product = await _productService.CreateAsync(dto);
         return CreatedResponse(product, "Product created successfully");
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductDto dto, IFormFile? image)
     {
+        if (image != null)
+        {
+            using var stream = image.OpenReadStream();
+            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+        }
+
         var product = await _productService.UpdateAsync(id, dto);
 
         if (product == null)

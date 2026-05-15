@@ -2,6 +2,7 @@ using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace Fitin.API.Controllers;
@@ -11,10 +12,12 @@ namespace Fitin.API.Controllers;
 public class AuthController : BaseApiController
 {
     private readonly AuthService _authService;
+    private readonly IUserRepository _userRepository;
 
-    public AuthController(AuthService authService)
+    public AuthController(AuthService authService, IUserRepository userRepository)
     {
         _authService = authService;
+        _userRepository = userRepository;
     }
 
     [HttpPost("register")]
@@ -70,14 +73,42 @@ public class AuthController : BaseApiController
  
     [Authorize]
     [HttpGet("profile")]
-    public IActionResult Profile()
+    public async Task<IActionResult> Profile()
     {
-        var user = new {
-            Id = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
-            Name = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value,
-            Email = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value,
-            Role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Failure("Invalid token", statusCode: 401);
+
+        var dbUser = await _userRepository.GetByIdAsync(userId);
+        if (dbUser == null)
+            return Failure("User not found", statusCode: 404);
+
+        var user = new
+        {
+            Id       = dbUser.Id,
+            Name     = dbUser.Name,
+            Email    = dbUser.Email,
+            Role     = dbUser.Role.ToString(),
+            IsActive = dbUser.IsActive
         };
         return Success(user, "Profile fetched successfully");
-}
+    }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure   = false,
+            SameSite = SameSiteMode.Strict,
+            Expires  = DateTime.UtcNow.AddDays(-1) // expire immediately
+        };
+
+        Response.Cookies.Append("accessToken",  "", cookieOptions);
+        Response.Cookies.Append("refreshToken", "", cookieOptions);
+
+        return Success<object?>(null, "Logged out successfully");
+    }
 }
