@@ -29,10 +29,10 @@ public class CartService : ICartService
         var product = await _productRepository.GetByIdAsync(productId);
 
         if (product == null)
-            throw new Exception("Product not found");
+            throw new NotFoundException("Product not found");
 
         if (product.Stock <= 0)
-            throw new Exception("Product out of stock");
+            throw new BadRequestException("Product out of stock");
 
         var cartItem = await _cartRepository.GetCartItemAsync(userId, productId);
 
@@ -95,10 +95,10 @@ public class CartService : ICartService
             throw new Exception("Product not found");
 
         if (cartItem.Quantity >= MAX_CART_QUANTITY)
-            throw new Exception("Maximum cart quantity reached");
+            throw new BadRequestException("Maximum cart quantity reached");
 
         if (cartItem.Quantity + 1 > product.Stock)
-            throw new Exception("Not enough stock available");
+            throw new BadRequestException("Not enough stock available");
 
         cartItem.IncreaseQuantity();
 

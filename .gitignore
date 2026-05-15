@@ -5,3 +5,8 @@ obj/
 *.dll
 *.pdb
 *.log
+# Local configuration files
+**/*.Development.json
+**/*.env
+.env*
+!appsettings.json

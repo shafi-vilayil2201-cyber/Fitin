@@ -10,11 +10,8 @@ namespace Fitin.Infrastructure.Repositories;
 
 public class WishlistRepository : GenericRepository<WishlistItem>, IWishlistRepository
 {
-    private readonly AppDbContext _context;
-
     public WishlistRepository(AppDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<WishlistItem?> GetWishlistItemAsync(Guid userId, Guid productId)

@@ -14,6 +14,11 @@ public class Order : BaseEntity
     public string ShippingPostalCode { get; private set; } = string.Empty;
     public string ShippingPhone { get; private set; } = string.Empty;
 
+    public string? RazorpayOrderId { get; private set; }
+    public string? RazorpayPaymentId { get; private set; }
+    public string? RazorpaySignature { get; private set; }
+    public string PaymentStatus { get; private set; } = "Pending";
+
     public ICollection<OrderItem> OrderItems {get; private set;} = new List<OrderItem>();
 
     private Order(){}
@@ -22,11 +27,34 @@ public class Order : BaseEntity
         UserId = userId;
         TotalAmount = totalAmount;
         Status = "Pending";
+        PaymentStatus = "Pending";
         ShippingName = shippingName;
         ShippingAddress = shippingAddress;
         ShippingCity = shippingCity;
         ShippingPostalCode = shippingPostalCode;
         ShippingPhone = shippingPhone;
+    }
+
+    public void SetRazorpayOrderId(string orderId)
+    {
+        RazorpayOrderId = orderId;
+        MarkUpdated();
+    }
+
+    public void MarkAsPaid(string paymentId, string signature)
+    {
+        RazorpayPaymentId = paymentId;
+        RazorpaySignature = signature;
+        PaymentStatus = "Paid";
+        Status = "Processing";
+        MarkUpdated();
+    }
+
+    public void MarkAsFailed()
+    {
+        PaymentStatus = "Failed";
+        Status = "Cancelled";
+        MarkUpdated();
     }
 
 

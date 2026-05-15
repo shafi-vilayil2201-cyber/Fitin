@@ -30,7 +30,8 @@ namespace Fitin.Infrastructure.Persistence
             {
                 builder.HasKey(x => x.Id); //define primary key
 
-                builder.HasIndex(x => x.Email) //
+                builder.HasIndex(x => x.Email)
+                    .HasFilter("[IsDeleted] = 0")
                     .IsUnique();
 
                 builder.Property(x => x.Role)
@@ -121,6 +122,7 @@ namespace Fitin.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Cascade);
 
                 builder.HasIndex(x => new {x.UserId, x.ProductId})
+                    .HasFilter("[IsDeleted] = 0")
                     .IsUnique();
             });
 
@@ -139,6 +141,7 @@ namespace Fitin.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict);
                 
                 builder.HasIndex(x => new {x.UserId,x.ProductId} )
+                    .HasFilter("[IsDeleted] = 0")
                     .IsUnique();
                 
             });

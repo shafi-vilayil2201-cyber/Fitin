@@ -67,4 +67,14 @@ public class OrderController : BaseApiController
         return Success("Order status updated");
     }
 
+    [HttpPost("confirm-payment")]
+    public async Task<IActionResult> ConfirmPayment([FromBody] ConfirmPaymentDto dto)
+    {
+        var result = await _orderService.ConfirmPaymentAsync(dto);
+        if (result)
+            return Success(true, "Payment verified successfully");
+        else
+            return Failure("Payment verification failed", statusCode: 400);
+    }
+
 }
