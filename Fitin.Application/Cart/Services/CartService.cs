@@ -1,6 +1,7 @@
 using AutoMapper;
 using Fitin.Application.Cart.Dto;
 using Fitin.Application.Cart.Interfaces;
+using Fitin.Application.Common.Exceptions;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Domain.Entities.CartItems;
 
