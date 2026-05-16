@@ -14,6 +14,7 @@ using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.Wishlist.Interfaces;
 using Fitin.Application.Common.Mappings;
+using AutoMapper;
 using Fitin.Application.Products.Services;
 using Fitin.Application.Cart.Services;
 using Fitin.Application.Wishlist.Services;
@@ -31,6 +32,7 @@ using Fitin.Application.Payments.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
 // Controllers
 builder.Services.AddControllers();
@@ -55,14 +57,18 @@ builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-builder.Services.AddAutoMapper(
-    typeof(ProductProfile),
-    typeof(WishlistProfile),
-    typeof(CartProfile),
-    typeof(OrderProfile),
-    typeof(UserProfile),
-    typeof(CategoryProfile)
-    );
+builder.Services.AddSingleton<AutoMapper.IConfigurationProvider>(_ =>
+    new AutoMapper.MapperConfiguration(cfg =>
+    {
+        cfg.AddProfile<ProductProfile>();
+        cfg.AddProfile<WishlistProfile>();
+        cfg.AddProfile<CartProfile>();
+        cfg.AddProfile<OrderProfile>();
+        cfg.AddProfile<UserProfile>();
+        cfg.AddProfile<CategoryProfile>();
+    }, null));
+builder.Services.AddScoped<IMapper>(sp =>
+    sp.GetRequiredService<AutoMapper.IConfigurationProvider>().CreateMapper(sp.GetService));
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
@@ -115,16 +121,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
     policy =>
     {
-        policy.WithOrigins(
-                    "http://localhost:5173",
-                    "http://localhost:5174",
-                    "http://localhost:5175",
-                    "http://localhost:3000",
-                    "https://fitin-com-psi.vercel.app"
-                )
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
+        }
     });
 });
 
@@ -148,14 +151,16 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 app.MapControllers();
 
 // Seed admin
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     await dbContext.Database.MigrateAsync();
-    await DbSeeder.SeedAdminAsync(dbContext);
+    await DbSeeder.SeedAdminAsync(dbContext, configuration, app.Environment.IsDevelopment());
 }
 
 app.Run();
