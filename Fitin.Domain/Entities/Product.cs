@@ -6,7 +6,7 @@ namespace Fitin.Domain.Entities.Products;
 
 public class Product : BaseEntity
 {
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
     public decimal Price { get; private set; }
     public Guid CategoryId{get;private set;}
     public Category Category{get ; private set;} = null!;
