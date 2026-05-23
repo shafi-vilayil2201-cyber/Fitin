@@ -11,12 +11,12 @@ namespace Fitin.API.Controllers;
 public class CategoryController : BaseApiController
 {
     private readonly ICategoryService _service;
-    private readonly IImageService _imageService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public CategoryController(ICategoryService service, IImageService imageService)
+    public CategoryController(ICategoryService service, IServiceProvider serviceProvider)
     {
         _service = service;
-        _imageService = imageService;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpGet]
@@ -44,7 +44,8 @@ public class CategoryController : BaseApiController
         if (image != null)
         {
             using var stream = image.OpenReadStream();
-            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+            var imageService = _serviceProvider.GetRequiredService<IImageService>();
+            dto.ImageUrl = await imageService.UploadImageAsync(stream, image.FileName);
         }
 
         var category = await _service.CreateAsync(dto);
@@ -58,7 +59,8 @@ public class CategoryController : BaseApiController
         if (image != null)
         {
             using var stream = image.OpenReadStream();
-            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+            var imageService = _serviceProvider.GetRequiredService<IImageService>();
+            dto.ImageUrl = await imageService.UploadImageAsync(stream, image.FileName);
         }
 
         var category= await _service.UpdateAsync(id,dto);

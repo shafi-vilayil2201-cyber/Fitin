@@ -58,6 +58,15 @@ namespace Fitin.Domain.Entities
             Role = role;
             MarkUpdated();
         }
+
+        public void SetPasswordHash(string passwordHash)
+        {
+            if (string.IsNullOrWhiteSpace(passwordHash))
+                throw new ArgumentException("Password hash is required.", nameof(passwordHash));
+
+            PasswordHash = passwordHash;
+            MarkUpdated();
+        }
         
     }
 }

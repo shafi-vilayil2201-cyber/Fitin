@@ -9,9 +9,12 @@ namespace Fitin.API.Middleware;
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    public ExceptionMiddleware(RequestDelegate next)
+    private readonly ILogger<ExceptionMiddleware> _logger;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -22,6 +25,8 @@ public class ExceptionMiddleware
         }
        catch (Exception ex)
     {
+        _logger.LogError(ex, "Unhandled exception while processing {Method} {Path}", context.Request.Method, context.Request.Path);
+
         context.Response.ContentType = "application/json";
 
         var statusCode = ex switch

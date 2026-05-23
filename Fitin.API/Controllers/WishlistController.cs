@@ -16,31 +16,42 @@ public class WishlistController : BaseApiController
     {
         _wishlistService = wishlistService;
     }
-    private Guid GetUserId()
+    private bool TryGetUserId(out Guid userId)
     {
-        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        userId = Guid.Empty;
+
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(userIdValue, out userId);
     }
 
     
     [HttpPost("{productId}")]
     public async Task<IActionResult> AddToWishlist(Guid productId)
     {
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
 
-        await _wishlistService.AddToWishListAsync(GetUserId(),productId);
+        await _wishlistService.AddToWishListAsync(userId, productId);
 
         return Success<object?>(null, "Product added to wishlist");
     }
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveFromWishist(Guid productId)
     {
-        await _wishlistService.RemoveFromWishlistAsync(GetUserId(),productId);
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
+
+        await _wishlistService.RemoveFromWishlistAsync(userId, productId);
 
         return Success<object?>(null, "Product removed from wishlist");
     }
     [HttpGet]
     public async Task<IActionResult> GetUserWishlist()
     {
-        var wishlist = await _wishlistService.GetUserWishListAsync(GetUserId());
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
+
+        var wishlist = await _wishlistService.GetUserWishListAsync(userId);
 
         return Success(wishlist, "Wishlist fetched successfully");
     }
