@@ -21,29 +21,41 @@ public class OrderController : BaseApiController
         _orderService = orderService;
     }
 
-    private Guid GetUserId()
+    private bool TryGetUserId(out Guid userId)
     {
-        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        userId = Guid.Empty;
+
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(userIdValue, out userId);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
     {
-        var result = await _orderService.CreateOrderAsync(GetUserId(),dto);
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
+
+        var result = await _orderService.CreateOrderAsync(userId, dto);
 
         return CreatedResponse(result,"Order created successfully");
     }
     [HttpGet]
     public async Task<IActionResult> GetUserOrders()
     {
-        var orders = await _orderService.GetUserOrderAsync(GetUserId());
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
+
+        var orders = await _orderService.GetUserOrderAsync(userId);
 
         return Success(orders,"Orders fetched successfully");
     }
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
-        var order = await _orderService.GetOrderByIdAsync(GetUserId(),id);
+        if (!TryGetUserId(out var userId))
+            return Failure("Invalid or missing auth token", statusCode: 401);
+
+        var order = await _orderService.GetOrderByIdAsync(userId, id);
 
         if(order == null)
             return Failure("order not found", statusCode: 404);

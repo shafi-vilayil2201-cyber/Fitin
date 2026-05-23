@@ -1,4 +1,3 @@
-using AutoMapper;
 using Fitin.Domain.Entities.Products;
 using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Products.Dto;
@@ -11,16 +10,13 @@ public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
     private readonly ICategoryRepository _categoryRepo;
-    private readonly IMapper _mapper;
    
 
     public ProductService(
         IProductRepository repository,
-        IMapper mapper,
         ICategoryRepository categoryRepository)
     {
         _repository = repository;
-        _mapper = mapper;
         _categoryRepo = categoryRepository;
     }
 
@@ -28,7 +24,7 @@ public class ProductService : IProductService
     {
         var products = await _repository.GetAllAsync();
 
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
+        return products.Select(MapProduct);
     }
 
     public async Task<ProductDto?> GetByIdAsync(Guid id)
@@ -38,7 +34,7 @@ public class ProductService : IProductService
         if (product == null)
             return null;
 
-        return _mapper.Map<ProductDto>(product);
+        return MapProduct(product);
     }
 
     public async Task<ProductDto> CreateAsync(CreateProductDto dto)
@@ -66,7 +62,7 @@ public class ProductService : IProductService
         await _repository.AddAsync(product);
 
         var createdProduct = await _repository.GetByIdAsync(product.Id);
-        return _mapper.Map<ProductDto>(createdProduct ?? product);
+        return MapProduct(createdProduct ?? product);
     }
 
     public async Task<ProductDto?> UpdateAsync(Guid id, UpdateProductDto dto)
@@ -98,7 +94,7 @@ public class ProductService : IProductService
         await _repository.UpdateAsync(product);
 
         var updatedProduct = await _repository.GetByIdAsync(id);
-        return _mapper.Map<ProductDto>(updatedProduct ?? product);
+        return MapProduct(updatedProduct ?? product);
     }
 
     public async Task DeleteAsync(Guid id)
@@ -113,6 +109,27 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductDto>> GetProductsAsync(ProductQueryDto query)
     {
         var products = await _repository.GetProductsAsync(query);
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
+        return products.Select(MapProduct);
+    }
+
+    private static ProductDto MapProduct(Product product)
+    {
+        return new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name ?? string.Empty,
+            Stock = product.Stock,
+            ImageUrl = product.ImageUrl,
+            Brand = product.Brand,
+            Sport = product.Sport,
+            Description = product.Description,
+            ShortDescription = product.ShortDescription,
+            LongDescription = product.LongDescription,
+            Rating = product.Rating,
+            Discount = product.Discount
+        };
     }
 }

@@ -1,4 +1,3 @@
-using AutoMapper;
 using Fitin.Application.Wishlist.Dto;
 using Fitin.Application.Wishlist.Interfaces;
 using Fitin.Domain.Entities.Wishlists;
@@ -8,11 +7,9 @@ namespace Fitin.Application.Wishlist.Services;
 public class WishlistService : IWishlistService
 {
     private readonly IWishlistRepository _wishlistRepository;
-    private readonly IMapper _mapper;
-    public WishlistService (IWishlistRepository wishlistRepository,IMapper mapper)
+    public WishlistService (IWishlistRepository wishlistRepository)
     {
         _wishlistRepository = wishlistRepository;
-        _mapper = mapper;
     }
 
     public async Task AddToWishListAsync(Guid userId,Guid productId)
@@ -39,7 +36,18 @@ public class WishlistService : IWishlistService
     {
         var item = await _wishlistRepository.GetUserWishlistAsync(userId);
 
-        return _mapper.Map<IEnumerable<WishlistItemDto>>(item);
+        return item.Select(MapWishlistItem);
+    }
+
+    private static WishlistItemDto MapWishlistItem(WishlistItem item)
+    {
+        return new WishlistItemDto
+        {
+            ProductId = item.ProductId,
+            ProductName = item.Product?.Name ?? string.Empty,
+            Price = item.Product?.Price ?? 0m,
+            ImageUrl = item.Product?.ImageUrl ?? string.Empty
+        };
     }
 }
 

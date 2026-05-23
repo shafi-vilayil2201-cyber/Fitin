@@ -1,4 +1,3 @@
-using AutoMapper;
 using Fitin.Application.Cart.Dto;
 using Fitin.Application.Cart.Interfaces;
 using Fitin.Application.Common.Exceptions;
@@ -10,21 +9,18 @@ namespace Fitin.Application.Cart.Services;
 public class CartService : ICartService
 {
     private readonly ICartRepository _cartRepository;
-    private readonly IMapper _mapper;
     private readonly IProductRepository _productRepository;
 
     private const int MAX_CART_QUANTITY = 10;
-    
+
     public CartService(
         ICartRepository cartRepository,
-        IMapper mapper,
         IProductRepository productRepository)
     {
         _cartRepository = cartRepository;
-        _mapper = mapper;
         _productRepository = productRepository;
     }
-    
+
     public async Task<AddToCartResultDto> AddToCartAsync(Guid userId, Guid productId)
     {
         var product = await _productRepository.GetByIdAsync(productId);
@@ -45,7 +41,7 @@ public class CartService : ICartService
             return new AddToCartResultDto
             {
                 Message = "Item already in cart",
-                Item = existingItem == null ? null : _mapper.Map<CartItemDto>(existingItem)
+                Item = existingItem == null ? null : MapCartItem(existingItem)
             };
         }
 
@@ -59,7 +55,7 @@ public class CartService : ICartService
         return new AddToCartResultDto
         {
             Message = "Product added to cart",
-            Item = addedItem == null ? null : _mapper.Map<CartItemDto>(addedItem)
+            Item = addedItem == null ? null : MapCartItem(addedItem)
         };
     }
 
@@ -80,7 +76,7 @@ public class CartService : ICartService
     {
         var cartItems = await _cartRepository.GetUserCartAsync(userId);
 
-        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+        return cartItems.Select(MapCartItem);
     }
 
     public async Task<IEnumerable<CartItemDto>> IncreaseQuantityAsync(Guid userId, Guid productId)
@@ -106,7 +102,7 @@ public class CartService : ICartService
         await _cartRepository.SaveChangesAsync();
 
         var cartItems = await _cartRepository.GetUserCartAsync(userId);
-        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+        return cartItems.Select(MapCartItem);
     }
 
     public async Task<IEnumerable<CartItemDto>> DecreaseQuantityAsync(Guid userId, Guid productId)
@@ -126,6 +122,18 @@ public class CartService : ICartService
         await _cartRepository.SaveChangesAsync();
 
         var cartItems = await _cartRepository.GetUserCartAsync(userId);
-        return _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+        return cartItems.Select(MapCartItem);
+    }
+
+    private static CartItemDto MapCartItem(CartItem item)
+    {
+        return new CartItemDto
+        {
+            ProductId = item.ProductId,
+            ProductName = item.Product?.Name ?? string.Empty,
+            ProductPrice = item.Product?.Price ?? 0m,
+            ProductImageUrl = item.Product?.ImageUrl ?? string.Empty,
+            Quantity = item.Quantity
+        };
     }
 }

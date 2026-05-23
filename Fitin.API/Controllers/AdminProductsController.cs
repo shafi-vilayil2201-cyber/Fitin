@@ -11,12 +11,12 @@ namespace Fitin.API.Controllers;
 public class AdminProductsController : BaseApiController
 {
     private readonly IProductService _productService;
-    private readonly IImageService _imageService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public AdminProductsController(IProductService productService, IImageService imageService)
+    public AdminProductsController(IProductService productService, IServiceProvider serviceProvider)
     {
         _productService = productService;
-        _imageService = imageService;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpGet]
@@ -43,7 +43,8 @@ public class AdminProductsController : BaseApiController
         if (image != null)
         {
             using var stream = image.OpenReadStream();
-            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+            var imageService = _serviceProvider.GetRequiredService<IImageService>();
+            dto.ImageUrl = await imageService.UploadImageAsync(stream, image.FileName);
         }
 
         var product = await _productService.CreateAsync(dto);
@@ -56,7 +57,8 @@ public class AdminProductsController : BaseApiController
         if (image != null)
         {
             using var stream = image.OpenReadStream();
-            dto.ImageUrl = await _imageService.UploadImageAsync(stream, image.FileName);
+            var imageService = _serviceProvider.GetRequiredService<IImageService>();
+            dto.ImageUrl = await imageService.UploadImageAsync(stream, image.FileName);
         }
 
         var product = await _productService.UpdateAsync(id, dto);
@@ -87,7 +89,8 @@ public class AdminProductsController : BaseApiController
 
         using var stream = file.OpenReadStream();
 
-        var url = await _imageService.UploadImageAsync(stream, file.FileName);
+        var imageService = _serviceProvider.GetRequiredService<IImageService>();
+        var url = await imageService.UploadImageAsync(stream, file.FileName);
 
         return Success(url, "Image uploaded successfully");
     }

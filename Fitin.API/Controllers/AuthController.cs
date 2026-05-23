@@ -13,11 +13,25 @@ public class AuthController : BaseApiController
 {
     private readonly AuthService _authService;
     private readonly IUserRepository _userRepository;
+    private readonly IWebHostEnvironment _environment;
 
-    public AuthController(AuthService authService, IUserRepository userRepository)
+    public AuthController(AuthService authService, IUserRepository userRepository, IWebHostEnvironment environment)
     {
         _authService = authService;
         _userRepository = userRepository;
+        _environment = environment;
+    }
+
+    private CookieOptions BuildAuthCookieOptions(DateTime expiresUtc)
+    {
+        var isDevelopment = _environment.IsDevelopment();
+        return new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = !isDevelopment,
+            SameSite = isDevelopment ? SameSiteMode.Lax : SameSiteMode.None,
+            Expires = expiresUtc
+        };
     }
 
     [HttpPost("register")]
@@ -52,21 +66,8 @@ public class AuthController : BaseApiController
     {
         var result = await _authService.LoginAsync(dto);
 
-        Response.Cookies.Append("accessToken", result.AccessToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddMinutes(15)
-        });
-
-        Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = false,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(1)
-        });
+        Response.Cookies.Append("accessToken", result.AccessToken, BuildAuthCookieOptions(DateTime.UtcNow.AddMinutes(15)));
+        Response.Cookies.Append("refreshToken", result.RefreshToken, BuildAuthCookieOptions(DateTime.UtcNow.AddDays(1)));
 
         return Success(result, "Login successful");
     }
@@ -98,13 +99,7 @@ public class AuthController : BaseApiController
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Secure   = false,
-            SameSite = SameSiteMode.Strict,
-            Expires  = DateTime.UtcNow.AddDays(-1) // expire immediately
-        };
+        var cookieOptions = BuildAuthCookieOptions(DateTime.UtcNow.AddDays(-1));
 
         Response.Cookies.Append("accessToken",  "", cookieOptions);
         Response.Cookies.Append("refreshToken", "", cookieOptions);

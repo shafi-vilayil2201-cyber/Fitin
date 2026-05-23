@@ -11,3 +11,4 @@ obj/
 .env*
 !appsettings.json
 *.csproj.lscache
+**/publish/

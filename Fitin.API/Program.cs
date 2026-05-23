@@ -28,6 +28,7 @@ using Fitin.Application.Categories.Interface;
 using Fitin.Application.Categories.Services;
 using Fitin.Application.Payments.Interfaces;
 using Fitin.Application.Payments.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 
 
 
@@ -66,7 +67,7 @@ builder.Services.AddSingleton<AutoMapper.IConfigurationProvider>(_ =>
         cfg.AddProfile<OrderProfile>();
         cfg.AddProfile<UserProfile>();
         cfg.AddProfile<CategoryProfile>();
-    }, null));
+    }, NullLoggerFactory.Instance));
 builder.Services.AddScoped<IMapper>(sp =>
     sp.GetRequiredService<AutoMapper.IConfigurationProvider>().CreateMapper(sp.GetService));
 
@@ -134,7 +135,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

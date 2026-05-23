@@ -13,10 +13,7 @@ public static class DbSeeder
         IConfiguration configuration,
         bool isDevelopment)
     {
-        if (await context.Users.AnyAsync(u => u.Role == UserRole.Admin))
-            return;
-
-        var adminEmail = configuration["SeedAdmin:Email"];
+        var adminEmail = configuration["SeedAdmin:Email"]?.Trim().ToLowerInvariant();
         var adminPassword = configuration["SeedAdmin:Password"];
 
         if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
@@ -24,14 +21,6 @@ public static class DbSeeder
             return;
         }
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword);
-
-        var admin = new User(
-            "System Admin",
-            adminEmail,
-            passwordHash,
-            UserRole.Admin
-        );
         var categories = new List<Category>
         {
             new Category("Running", "https://your-image-url.com/running.jpg"),
@@ -42,7 +31,33 @@ public static class DbSeeder
             await context.Categories.AddRangeAsync(categories);
         }
 
-        await context.Users.AddAsync(admin);
+        var existingUser = await context.Users
+            .FirstOrDefaultAsync(u => u.Email == adminEmail);
+
+        if (existingUser == null)
+        {
+            var admin = new User(
+                "System Admin",
+                adminEmail,
+                BCrypt.Net.BCrypt.HashPassword(adminPassword),
+                UserRole.Admin
+            );
+
+            await context.Users.AddAsync(admin);
+        }
+        else
+        {
+            if (existingUser.Role != UserRole.Admin)
+            {
+                existingUser.UpdateRole(UserRole.Admin);
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(adminPassword, existingUser.PasswordHash))
+            {
+                existingUser.SetPasswordHash(BCrypt.Net.BCrypt.HashPassword(adminPassword));
+            }
+        }
+
         await context.SaveChangesAsync();
     }
 }

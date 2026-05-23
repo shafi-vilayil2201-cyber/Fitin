@@ -1,4 +1,3 @@
-using AutoMapper;
 using Fitin.Application.Categories.DTOs;
 using Fitin.Application.Categories.Interface;
 using Fitin.Application.Common.Exceptions;
@@ -9,20 +8,17 @@ namespace Fitin.Application.Categories.Services;
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepo;
-    private readonly IMapper _mapper;
 
     public CategoryService(
-            ICategoryRepository categoryRepository,
-            IMapper mapper)
+            ICategoryRepository categoryRepository)
     {
         _categoryRepo = categoryRepository;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
         var categories = await _categoryRepo.GetAllAsync();
-        return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+        return categories.Select(MapCategory);
     }
 
     public async Task<CategoryDto?> GetByIdAsync(Guid id)
@@ -32,7 +28,7 @@ public class CategoryService : ICategoryService
         if(category == null)
             return null;
         
-        return _mapper.Map<CategoryDto>(category);
+        return MapCategory(category);
     }
     public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
     {
@@ -44,8 +40,7 @@ public class CategoryService : ICategoryService
         var category = new Category(dto.Name, dto.ImageUrl);
         await _categoryRepo.AddAsync(category);
 
-
-        return _mapper.Map<CategoryDto>(category);
+        return MapCategory(category);
     }
 
     public async Task<CategoryDto?> UpdateAsync(Guid id,UpdateCategoryDto dto)
@@ -63,7 +58,7 @@ public class CategoryService : ICategoryService
         category.UpdateName(dto.Name, dto.ImageUrl);
         await _categoryRepo.UpdateAsync(category);
 
-        return _mapper.Map<CategoryDto>(category);
+        return MapCategory(category);
     }
 
     public async Task DeleteAsync(Guid id)
@@ -73,6 +68,17 @@ public class CategoryService : ICategoryService
             return;
 
         await _categoryRepo.DeleteAsync(category);
+    }
+
+    private static CategoryDto MapCategory(Category category)
+    {
+        return new CategoryDto
+        {
+            Id = category.Id,
+            Name = category.Name,
+            ImageUrl = category.ImageUrl,
+            CreatedAt = category.CreatedAt
+        };
     }
 
 }
