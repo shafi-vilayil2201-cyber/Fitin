@@ -1,6 +1,7 @@
 using Fitin.Application.Common.Exceptions;
 using Fitin.Application.DTOs;
 using Fitin.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace Fitin.Application.Authentication.Interfaces;
 
@@ -10,12 +11,18 @@ public class AuthService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _tokenGenerator;
+    private readonly IConfiguration _configuration;
 
-    public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtTokenGenerator tokenGenerator)
+    public AuthService(
+        IUserRepository userRepository,
+        IPasswordHasher passwordHasher,
+        IJwtTokenGenerator tokenGenerator,
+        IConfiguration configuration)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _tokenGenerator = tokenGenerator;
+        _configuration = configuration;
     }
 
     public async Task RegisterAsync(RegisterRequestDto dto)
@@ -73,17 +80,65 @@ public class AuthService
 
         return await GenerateTokensAsync(user);
     }
+
+    public async Task<AuthResponseDto> RefreshAsync(string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            throw new BadRequestException("Refresh token is required.");
+
+        var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
+
+        if (user == null)
+            throw new BadRequestException("Invalid or expired refresh token.");
+
+        var storedRefreshToken = user.RefreshTokens
+            .OrderByDescending(x => x.ExpiresAt)
+            .FirstOrDefault(x => x.Token == refreshToken);
+
+        if (storedRefreshToken == null || storedRefreshToken.IsRevoked || storedRefreshToken.IsExpired())
+            throw new BadRequestException("Invalid or expired refresh token.");
+
+        if (!user.IsActive)
+            throw new BadRequestException("Your account is blocked.");
+
+        storedRefreshToken.Revoke();
+
+        return await GenerateTokensAsync(user);
+    }
+
+    public async Task LogoutAsync(string? refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return;
+
+        var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
+
+        if (user == null)
+            return;
+
+        var storedRefreshToken = user.RefreshTokens
+            .OrderByDescending(x => x.ExpiresAt)
+            .FirstOrDefault(x => x.Token == refreshToken);
+
+        if (storedRefreshToken == null || storedRefreshToken.IsRevoked)
+            return;
+
+        storedRefreshToken.Revoke();
+        await _userRepository.SaveChangesAsync();
+    }
+
     private async Task<AuthResponseDto> GenerateTokensAsync(User user)
     {
         var accessToken = _tokenGenerator.GenerateAccessToken(user);
         var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
-        var AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(15);
-        var RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(1);
+        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(
+            Convert.ToInt32(_configuration["Jwt:ExpiryMinutes"]));
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(1);
 
         var refreshEntity = new RefreshToken(
             refreshToken,
-            RefreshTokenExpiresAt,
+            refreshTokenExpiresAt,
             user.Id);
 
         user.AddRefreshToken(refreshEntity);
@@ -94,8 +149,8 @@ public class AuthService
         return new AuthResponseDto(
             accessToken, 
             refreshToken,
-            AccessTokenExpiresAt,
-            RefreshTokenExpiresAt,
+            accessTokenExpiresAt,
+            refreshTokenExpiresAt,
             user.Id,
             user.Name,
             user.Email,
