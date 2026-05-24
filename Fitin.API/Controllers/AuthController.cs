@@ -34,6 +34,20 @@ public class AuthController : BaseApiController
         };
     }
 
+    private void SetAuthCookies(AuthResponseDto authResponse)
+    {
+        Response.Cookies.Append("accessToken", authResponse.AccessToken, BuildAuthCookieOptions(authResponse.AccessTokenExpiresAt));
+        Response.Cookies.Append("refreshToken", authResponse.RefreshToken, BuildAuthCookieOptions(authResponse.RefreshTokenExpiresAt));
+    }
+
+    private void ClearAuthCookies()
+    {
+        var expiredAt = DateTime.UtcNow.AddDays(-1);
+
+        Response.Cookies.Append("accessToken", "", BuildAuthCookieOptions(expiredAt));
+        Response.Cookies.Append("refreshToken", "", BuildAuthCookieOptions(expiredAt));
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromForm] RegisterRequestDto dto)
     {
@@ -66,10 +80,23 @@ public class AuthController : BaseApiController
     {
         var result = await _authService.LoginAsync(dto);
 
-        Response.Cookies.Append("accessToken", result.AccessToken, BuildAuthCookieOptions(DateTime.UtcNow.AddMinutes(15)));
-        Response.Cookies.Append("refreshToken", result.RefreshToken, BuildAuthCookieOptions(DateTime.UtcNow.AddDays(1)));
+        SetAuthCookies(result);
 
         return Success(result, "Login successful");
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return Failure("Refresh token is missing", statusCode: 401);
+
+        var result = await _authService.RefreshAsync(refreshToken);
+        SetAuthCookies(result);
+
+        return Success(result, "Token refreshed successfully");
     }
  
     [Authorize]
@@ -95,14 +122,11 @@ public class AuthController : BaseApiController
         return Success(user, "Profile fetched successfully");
     }
 
-    [Authorize]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
-        var cookieOptions = BuildAuthCookieOptions(DateTime.UtcNow.AddDays(-1));
-
-        Response.Cookies.Append("accessToken",  "", cookieOptions);
-        Response.Cookies.Append("refreshToken", "", cookieOptions);
+        await _authService.LogoutAsync(Request.Cookies["refreshToken"]);
+        ClearAuthCookies();
 
         return Success<object?>(null, "Logged out successfully");
     }

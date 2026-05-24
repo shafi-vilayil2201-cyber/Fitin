@@ -25,6 +25,12 @@ namespace Fitin.Infrastructure.Repositories;
                 .Include(u => u.RefreshTokens)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
+        public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Users
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == refreshToken));
+        }
         public async Task AddAsync(User user)
         {
             await _context.Users.AddAsync(user);
