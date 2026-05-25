@@ -29,7 +29,9 @@ using Fitin.Application.Categories.Services;
 using Fitin.Application.Payments.Interfaces;
 using Fitin.Application.Payments.Services;
 using Microsoft.Extensions.Logging.Abstractions;
-
+using Fitin.Application.AI.Interfaces;
+using Fitin.Application.AI.Services;
+using Fitin.Infrastructure.AI.Anthropic;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +59,10 @@ builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IAiChatService, AiChatService>();
+builder.Services.AddScoped<IFaqKnowledgeService, FaqKnowledgeService>();
+builder.Services.AddScoped<IProductAssistantService, ProductAssistantService>();
+builder.Services.AddScoped<IAnthropicChatClient, AnthropicChatClient>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 builder.Services.AddSingleton<AutoMapper.IConfigurationProvider>(_ =>
     new AutoMapper.MapperConfiguration(cfg =>
