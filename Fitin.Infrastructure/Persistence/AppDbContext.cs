@@ -5,6 +5,7 @@ using Fitin.Domain.Entities.CartItems;
 using Fitin.Domain.Entities.Wishlists;
 using CloudinaryDotNet.Actions;
 using Fitin.Domain.Entities.Categories;
+using Fitin.Domain.Entities.Supplements;
 // using Fitin.Domain.Common;
 // using System.Linq.Expressions;
 
@@ -20,6 +21,7 @@ namespace Fitin.Infrastructure.Persistence
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<Supplement> Supplements => Set<Supplement>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         
@@ -103,6 +105,58 @@ namespace Fitin.Infrastructure.Persistence
                     .HasForeignKey(x => x.CategoryId)
                     .OnDelete(DeleteBehavior.Restrict);
 
+            });
+
+            modelBuilder.Entity<Supplement>(builder =>
+            {
+                builder.HasKey(x => x.Id);
+
+                builder.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                builder.Property(x => x.Stock)
+                    .IsRequired();
+
+                builder.Property(x => x.ImageUrl)
+                    .IsRequired()
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Brand)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Description)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.ShortDescription)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.LongDescription)
+                    .IsRequired()
+                    .HasMaxLength(4000)
+                    .HasDefaultValue(string.Empty);
+
+                builder.Property(x => x.Rating)
+                    .HasPrecision(4, 2)
+                    .HasDefaultValue(0m);
+
+                builder.Property(x => x.Discount)
+                    .HasPrecision(5, 2)
+                    .HasDefaultValue(0m);
+
+                builder.Property(x => x.Price)
+                    .HasPrecision(18, 2);
+                
+                builder.HasOne(x => x.Category)
+                    .WithMany()
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
             modelBuilder.Entity<CartItem>(builder =>
             {
@@ -203,6 +257,9 @@ namespace Fitin.Infrastructure.Persistence
 
             modelBuilder.Entity<Product>()
             .HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<Supplement>()
+                .HasQueryFilter(x => !x.IsDeleted);
 
             modelBuilder.Entity<CartItem>()
                 .HasQueryFilter(x => !x.IsDeleted);

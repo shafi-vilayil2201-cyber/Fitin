@@ -14,6 +14,8 @@ using Fitin.Application.Products.Interfaces;
 using Fitin.Application.Authentication.Interfaces;
 using Fitin.Application.Wishlist.Interfaces;
 using Fitin.Application.Common.Mappings;
+using Fitin.Application.Supplements.Interfaces;
+using Fitin.Application.Supplements.Services;
 using AutoMapper;
 using Fitin.Application.Products.Services;
 using Fitin.Application.Cart.Services;
@@ -44,9 +46,31 @@ builder.Services.AddSwaggerGen();
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (builder.Environment.IsDevelopment() && (string.IsNullOrEmpty(connectionString) || connectionString.Contains("fitin-sql-shafi") || connectionString.Contains("YOUR_SERVER")))
+    {
+        options.UseSqlite("Data Source=fitin.db");
+    }
+    else
+    {
+        try
+        {
+            options.UseSqlServer(connectionString);
+        }
+        catch
+        {
+            if (builder.Environment.IsDevelopment())
+            {
+                options.UseSqlite("Data Source=fitin.db");
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
+});
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -54,6 +78,7 @@ builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ISupplementRepository, SupplementRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.Configure<CloudinarySettings>(
@@ -68,6 +93,7 @@ builder.Services.AddSingleton<AutoMapper.IConfigurationProvider>(_ =>
     new AutoMapper.MapperConfiguration(cfg =>
     {
         cfg.AddProfile<ProductProfile>();
+        cfg.AddProfile<SupplementProfile>();
         cfg.AddProfile<WishlistProfile>();
         cfg.AddProfile<CartProfile>();
         cfg.AddProfile<OrderProfile>();
@@ -78,6 +104,7 @@ builder.Services.AddScoped<IMapper>(sp =>
     sp.GetRequiredService<AutoMapper.IConfigurationProvider>().CreateMapper(sp.GetService));
 
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISupplementService, SupplementService>();
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -166,7 +193,16 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    await dbContext.Database.MigrateAsync();
+    
+    if (dbContext.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+    {
+        await dbContext.Database.EnsureCreatedAsync();
+    }
+    else
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+    
     await DbSeeder.SeedAdminAsync(dbContext, configuration, app.Environment.IsDevelopment());
 }
 
