@@ -127,3 +127,39 @@ az webapp deploy --resource-group <resource-group> --name <app-name> --src-path 
 - Open `https://<app-name>.azurewebsites.net/health`
 - Confirm the Azure SQL firewall allows access
 - Test your frontend against the deployed API base URL
+
+## CI/CD With GitHub Actions
+
+This repository now includes two workflows:
+
+- `.github/workflows/ci.yml`
+  Runs on pull requests to `main`, and pushes to `main` and `develop`.
+  It performs `restore`, `build`, and `publish` so every change proves the API is still releasable.
+
+- `.github/workflows/deploy.yml`
+  Runs on pushes to `main` and can also be started manually from GitHub Actions.
+  It publishes the API and deploys it to Azure App Service.
+
+### Required GitHub secrets
+
+Add these in `GitHub -> Settings -> Secrets and variables -> Actions`:
+
+- `AZURE_WEBAPP_NAME`
+- `AZURE_WEBAPP_PUBLISH_PROFILE`
+
+You can download the publish profile from:
+
+- `Azure Portal -> App Service -> Overview -> Get publish profile`
+
+### Recommended deployment flow
+
+1. Push feature work to a branch.
+2. Open a pull request into `main`.
+3. Let `CI` verify the branch can build and publish cleanly.
+4. Merge into `main`.
+5. Let `Deploy API` release the latest build to Azure.
+
+### What this pipeline does not cover yet
+
+- No automated tests exist in the repository yet, so CI cannot run `dotnet test`.
+- Database migrations are not executed as a separate deployment step because the app already applies migrations on startup.
